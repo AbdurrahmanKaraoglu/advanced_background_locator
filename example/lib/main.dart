@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _updateNotificationText(LocationDto data) async {
     await AdvancedBackgroundLocator.updateNotificationText(
-      title: "New Location Received",
+      title: "Yeni Konum Alındı",
       msg: "${DateTime.now()}",
       bigMsg: "${data.latitude}, ${data.longitude}",
     );
@@ -85,7 +85,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Flutter Background Locator'),
+          title: const Text('Flutter Arkaplanda Konum Bulucu'),
         ),
         body: Padding(
           padding: const EdgeInsets.all(22),
@@ -95,11 +95,11 @@ class _MyAppState extends State<MyApp> {
               children: <Widget>[
                 ElevatedButton(
                   onPressed: _onStart,
-                  child: const Text('Start'),
+                  child: const Text('Başlat'),
                 ),
                 ElevatedButton(
                   onPressed: onStop,
-                  child: const Text('Stop'),
+                  child: const Text('Bitir'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -108,9 +108,9 @@ class _MyAppState extends State<MyApp> {
                       logStr = '';
                     });
                   },
-                  child: const Text('Clear Log'),
+                  child: const Text('Log Dosyasını Temizle'),
                 ),
-                Text("Status: ${isRunning ? 'Is running' : 'Is not running'}"),
+                Text("Durum: ${isRunning ? 'Çalışıyor' : 'Durduruldu'}${lastLocation != null ? "\nSon Konum: ${lastLocation!.latitude}, ${lastLocation!.longitude}" : ""}"),
                 Text(logStr),
               ],
             ),
