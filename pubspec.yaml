@@ -1,7 +1,9 @@
 name: advanced_background_locator
-description: "A new Flutter package project."
+description: "Arka planda olsa dahi konum takibi yapabilen bir paket geliştirme projesi"
 version: 0.0.1
-homepage: https://github.com/AbdurrahmanKaraoglu/advanced_background_locator
+homepage: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator.git"
+repository: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator.git"
+issue_tracker: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator/issues"
 
 environment:
   sdk: ^3.5.2
@@ -11,6 +13,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+
+license: MIT
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -21,6 +25,12 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.abdurrahmankaraoglu.advanced_background_locator
+        pluginClass: BackgroundLocatorPlugin
+
 
   # To add assets to your package, add an assets section, like this:
   # assets:

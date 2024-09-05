@@ -8,7 +8,7 @@ import 'package:advanced_background_locator/settings/ios_settings.dart';
 import 'package:advanced_background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart'; // location_permissions yerine
-import 'file_manager.dart';
+import '../file_manager.dart';
 import 'location_callback_handler.dart';
 import 'location_service_repository.dart';
 

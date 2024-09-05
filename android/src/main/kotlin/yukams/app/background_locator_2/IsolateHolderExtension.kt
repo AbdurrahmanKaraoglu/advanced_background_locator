@@ -1,103 +1,98 @@
 package com.abdurrahmankaraoglu.advanced_background_locator
 
-import android.Manifest
-import android.content.Context
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
-import com.google.android.gms.location.LocationRequest
-import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.view.FlutterCallbackInformation
-import com.abdurrahmankaraoglu.advanced_background_locator.IsolateHolderService.Companion.isServiceInitialized
-import com.abdurrahmankaraoglu.advanced_background_locator.provider.LocationRequestOptions
-import java.lang.RuntimeException
-import java.util.concurrent.atomic.AtomicBoolean
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler
+import io.flutter.plugin.common.MethodChannel.Result
+import com.abdurrahmankaraoglu.advanced_background_locator.Keys
 
-internal fun IsolateHolderService.startLocatorService(context: Context) {
+class IsolateHolderService : Service(), MethodCallHandler {
 
-    val serviceStarted = AtomicBoolean(IsolateHolderService.isServiceRunning)
-    // start synchronized block to prevent multiple service instant
-    synchronized(serviceStarted) {
-        this.context = context
-        // resetting the background engine to avoid being stuck after an app crash
-        IsolateHolderService.backgroundEngine?.destroy();
-        IsolateHolderService.backgroundEngine = null
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                // We need flutter engine to handle callback, so if it is not available we have to create a
-                // Flutter engine without any view
-                Log.e("IsolateHolderService", "startLocatorService: Start Flutter Engine")
-                IsolateHolderService.backgroundEngine = FlutterEngine(context)
-
-                val callbackHandle = context.getSharedPreferences(
-                    Keys.SHARED_PREFERENCES_KEY,
-                    Context.MODE_PRIVATE
-                )
-                    .getLong(Keys.CALLBACK_DISPATCHER_HANDLE_KEY, 0)
-                val callbackInfo =
-                    FlutterCallbackInformation.lookupCallbackInformation(callbackHandle)
-
-                if(callbackInfo == null) {
-                    Log.e("IsolateHolderExtension", "Fatal: failed to find callback");
-                    return;
-                }
-
-                val args = DartExecutor.DartCallback(
-                    context.assets,
-                    FlutterInjector.instance().flutterLoader().findAppBundlePath(),
-                    callbackInfo
-                )
-                IsolateHolderService.backgroundEngine?.dartExecutor?.executeDartCallback(args)
-                isServiceInitialized = true
-                Log.e("IsolateHolderExtension", "service initialized")
-            }
-        } catch (e: UnsatisfiedLinkError) {
-            e.printStackTrace()
-        }
+    companion object {
+        const val ACTION_START = "ACTION_START"
+        const val ACTION_SHUTDOWN = "ACTION_SHUTDOWN"
+        const val ACTION_UPDATE_NOTIFICATION = "ACTION_UPDATE_NOTIFICATION"
+        var isServiceRunning = false
     }
 
-    IsolateHolderService.getBinaryMessenger(context)?.let { binaryMessenger ->
-        backgroundChannel =
-            MethodChannel(
-                binaryMessenger,
-                Keys.BACKGROUND_CHANNEL_ID
-            )
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-            ) {
-                backgroundChannel.setMethodCallHandler(this)
-            }
-        } catch (e: RuntimeException) {
-            e.printStackTrace()
+    private lateinit var flutterEngine: FlutterEngine
+    private var methodChannel: MethodChannel? = null
+
+    override fun onCreate() {
+        super.onCreate()
+        flutterEngine = FlutterEngine(applicationContext).apply {
+            dartExecutor.executeDartEntrypoint(DartExecutor.DartEntrypoint.createDefault())
+            FlutterEngineCache.getInstance().put("service_engine", this)
+            methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, Keys.CHANNEL_ID)
+            methodChannel?.setMethodCallHandler(this@IsolateHolderService)
         }
+        isServiceRunning = true
     }
-}
 
-fun getLocationRequest(intent: Intent): LocationRequestOptions {
-    val interval: Long = (intent.getIntExtra(Keys.SETTINGS_INTERVAL, 10) * 1000).toLong()
-    val accuracyKey = intent.getIntExtra(Keys.SETTINGS_ACCURACY, 4)
-    val accuracy = getAccuracy(accuracyKey)
-    val distanceFilter = intent.getDoubleExtra(Keys.SETTINGS_DISTANCE_FILTER, 0.0)
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            when (it.action) {
+                ACTION_START -> startLocatorService(it)
+                ACTION_SHUTDOWN -> stopLocatorService()
+                ACTION_UPDATE_NOTIFICATION -> updateNotification(it)
+            }
+        }
+        return START_STICKY
+    }
 
-    return LocationRequestOptions(interval, accuracy, distanceFilter.toFloat())
-}
+    private fun startLocatorService(intent: Intent) {
+        Log.d("IsolateHolderService", "Starting locator service")
+        val settings = intent.extras
+        val notification = createNotification(settings)
+        startForeground(1, notification)
+    }
 
-fun getAccuracy(key: Int): Int {
-    return when (key) {
-        0 -> LocationRequest.PRIORITY_NO_POWER
-        1 -> LocationRequest.PRIORITY_LOW_POWER
-        2 -> LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        3 -> LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        4 -> LocationRequest.PRIORITY_HIGH_ACCURACY
-        else -> LocationRequest.PRIORITY_HIGH_ACCURACY
+    private fun stopLocatorService() {
+        Log.d("IsolateHolderService", "Stopping locator service")
+        stopForeground(true)
+        stopSelf()
+        isServiceRunning = false
+    }
+
+    private fun updateNotification(intent: Intent) {
+        val notification = createNotification(intent.extras)
+        startForeground(1, notification)
+    }
+
+    private fun createNotification(extras: Bundle?): Notification {
+        val channelId = "background_locator_channel"
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, "Background Locator Service", NotificationManager.IMPORTANCE_LOW)
+            notificationManager.createNotificationChannel(channel)
+        }
+        val builder = Notification.Builder(this, channelId)
+            .setContentTitle(extras?.getString(Keys.SETTINGS_ANDROID_NOTIFICATION_TITLE))
+            .setContentText(extras?.getString(Keys.SETTINGS_ANDROID_NOTIFICATION_MSG))
+            .setSmallIcon(R.drawable.ic_notification)
+            .setPriority(Notification.PRIORITY_LOW)
+        return builder.build()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
+
+    override fun onMethodCall(call: MethodCall, result: Result) {
+        when (call.method) {
+            "methodName" -> result.success(true) // Handle method call here
+            else -> result.notImplemented()
+        }
     }
 }

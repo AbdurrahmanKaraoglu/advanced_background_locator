@@ -1,13 +1,43 @@
+# Eclipse Buildship Core Preferences
+
+# Build arguments to pass to Gradle
 arguments=
+
+# Whether to automatically synchronize Gradle projects with Eclipse
 auto.sync=false
+
+# Enable or disable build scans
 build.scans.enabled=false
+
+# Gradle distribution to use for the connection
+# Ensure the version matches your Gradle setup
 connection.gradle.distribution=GRADLE_DISTRIBUTION(VERSION(6.0))
+
+# Directory of the Gradle project
 connection.project.dir=
+
+# Version of Eclipse preferences schema
 eclipse.preferences.version=1
+
+# Directory of the Gradle user home
+# Leave empty to use the default location
 gradle.user.home=
+
+# Java home directory to use for Gradle builds
+# Adjust to your JDK installation directory
 java.home=/usr/lib/jvm/java-8-openjdk-amd64
+
+# JVM arguments for Gradle
 jvm.arguments=
+
+# Whether to use Gradle in offline mode
 offline.mode=false
+
+# Whether to override workspace settings
 override.workspace.settings=true
+
+# Whether to show the console view
 show.console.view=true
+
+# Whether to show the executions view
 show.executions.view=true

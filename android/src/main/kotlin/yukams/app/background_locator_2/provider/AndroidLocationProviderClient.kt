@@ -5,12 +5,16 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import androidx.core.content.ContextCompat
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 
-class AndroidLocationProviderClient(context: Context, override var listener: LocationUpdateListener?) : BLLocationProvider, LocationListener {
+class AndroidLocationProviderClient(
+    context: Context,
+    override var listener: LocationUpdateListener?
+) : BLLocationProvider, LocationListener {
+
     private val client: LocationManager? =
-            ContextCompat.getSystemService(context, LocationManager::class.java)
+        ContextCompat.getSystemService(context, LocationManager::class.java)
 
     private var overrideLocation: Boolean = false
     private var timeOfLastLocation: Long = 0L
@@ -23,67 +27,74 @@ class AndroidLocationProviderClient(context: Context, override var listener: Loc
 
     @SuppressLint("MissingPermission")
     override fun requestLocationUpdates(request: LocationRequestOptions) {
-        var gpsLocation: Location? = null
-        var networkLocation: Location? = null
         timeBetweenLocation = request.interval
-        if (client?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true) {
-            client.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+
+        client?.let { locationManager ->
+            // Request updates for both GPS and network providers if enabled
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
                     request.interval,
                     request.distanceFilter,
-                    this)
-        }
-        if (client?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true) {
-            client.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                    request.interval,
-                    request.distanceFilter,
-                    this)
-        }
-        gpsLocation = client?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        networkLocation = client?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-        // return the android device last Location after start request location
-        if (gpsLocation != null && networkLocation != null) {
-            if (gpsLocation.time < networkLocation.time) {
-                onLocationChanged(networkLocation)
-            } else {
-                onLocationChanged(gpsLocation)
+                    this
+                )
             }
-        } else if (gpsLocation != null) {
-            onLocationChanged(gpsLocation)
-        } else if (networkLocation != null) {
-            onLocationChanged(networkLocation)
+            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER,
+                    request.interval,
+                    request.distanceFilter,
+                    this
+                )
+            }
+
+            // Retrieve the last known location
+            val gpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            val networkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+            // Determine the best location to return
+            val bestLocation = when {
+                gpsLocation != null && networkLocation != null -> {
+                    if (gpsLocation.time < networkLocation.time) networkLocation else gpsLocation
+                }
+                gpsLocation != null -> gpsLocation
+                networkLocation != null -> networkLocation
+                else -> null
+            }
+
+            // Notify the listener with the best location
+            bestLocation?.let {
+                onLocationChanged(it)
+            }
         }
     }
 
     override fun onLocationChanged(location: Location) {
         overrideLocation = false
-        //whenever the expected time period is reached invalidate the last known accuracy
-        // so that we don't just receive better and better accuracy and eventually risk receiving
-        // only minimal locations
+
+        // Validate location accuracy
         if (location.hasAccuracy()) {
-            if (!location.accuracy.isNaN() &&
-                    location.accuracy != 0.0f &&
-                    !location.accuracy.isFinite() &&
-                    !location.accuracy.isInfinite()) {
+            if (location.accuracy != 0.0f && !location.accuracy.isNaN() && location.accuracy.isFinite()) {
                 overrideLocation = true
             }
         }
-        //ensure that we don't get a lot of events
-        // or if enabled, only get more accurate events within mTimeBetweenLocationEvents
+
+        // Check if enough time has passed or if we need to override location
         if (location.time - timeOfLastLocation >= timeBetweenLocation || overrideLocation) {
-            //be sure to store the time of receiving this event !
             timeOfLastLocation = location.time
-            //send message to parent containing the location object
             listener?.onLocationUpdated(LocationParserUtil.getLocationMapFromLocation(location))
         }
     }
 
     override fun onProviderDisabled(provider: String) {
-        // nop
+        // Optionally handle provider being disabled
     }
 
     override fun onProviderEnabled(provider: String) {
-        // nop
+        // Optionally handle provider being enabled
     }
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
 
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+        // Optionally handle status changes
+    }
 }
