@@ -44,6 +44,7 @@ class LocationServiceRepository {
   }
 
   Future<void> callback(LocationDto locationDto) async {
+    locationDto.toString();
     await setLogPosition(_count, locationDto);
     final SendPort? send = IsolateNameServer.lookupPortByName(isolateName);
     send?.send(locationDto.toJson());
