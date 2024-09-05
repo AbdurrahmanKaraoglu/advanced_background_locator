@@ -293,39 +293,36 @@ class IsolateHolderService : MethodChannel.MethodCallHandler, LocationUpdateList
         }
     }
 
-    override fun onLocationUpdated(location: HashMap<Any, Any>?) {
-        try {
-            context?.let {
-                FlutterInjector.instance().flutterLoader().ensureInitializationComplete(
-                    it, null
+override fun onLocationUpdated(location: LocationInfo?) {
+    try {
+        // Context'in null olup olmadığını kontrol edin
+        context?.let { ctx ->
+            // Flutter'ı başlatmak için gerekli adım
+            FlutterInjector.instance().flutterLoader().ensureInitializationComplete(ctx, null)
+
+            // location nesnesinin provider bilgisini güncelleyin
+            location?.let { loc ->
+                val locationClient = PreferencesManager.getLocationClient(ctx)
+                val updatedLocation = loc.copy(provider = locationClient.name) // Eğer veri sınıfı değilse, bu kısmı güncellemelisiniz
+
+                val callbackHandle = PreferencesManager.getCallbackHandle(ctx, Keys.CALLBACK_HANDLE_KEY) as Long
+
+                // location nesnesini HashMap'e dönüştürün
+                val result: HashMap<Any, Any> = hashMapOf(
+                    Keys.ARG_CALLBACK to callbackHandle,
+                    Keys.ARG_LOCATION to updatedLocation // updatedLocation kullanılacak
                 )
-            }
 
-            //https://github.com/flutter/plugins/pull/1641
-            //https://github.com/flutter/flutter/issues/36059
-            //https://github.com/flutter/plugins/pull/1641/commits/4358fbba3327f1fa75bc40df503ca5341fdbb77d
-            // new version of flutter can not invoke method from background thread
-            if (location != null) {
-                val callback =
-                    context?.let {
-                        PreferencesManager.getCallbackHandle(
-                            it,
-                            Keys.CALLBACK_HANDLE_KEY
-                        )
-                    } as Long
-
-                val result: HashMap<Any, Any> =
-                    hashMapOf(
-                        Keys.ARG_CALLBACK to callback,
-                        Keys.ARG_LOCATION to location
-                    )
-
+                // Veriyi ana iş parçacığına göndermek için method çağrısını yap
                 sendLocationEvent(result)
             }
-        } catch (e: Exception) {
-
         }
+    } catch (e: Exception) {
+        // Hata durumunda log yazın veya hata yönetimi yapın
+        Log.e("LocationUpdateError", "Error updating location", e)
     }
+}
+
 
     private fun sendLocationEvent(result: HashMap<Any, Any>) {
         //https://github.com/flutter/plugins/pull/1641
