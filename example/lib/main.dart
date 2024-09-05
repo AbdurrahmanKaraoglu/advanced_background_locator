@@ -7,12 +7,12 @@ import 'package:advanced_background_locator/settings/android_settings.dart';
 import 'package:advanced_background_locator/settings/ios_settings.dart';
 import 'package:advanced_background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:location_permissions/location_permissions.dart';
+import 'package:permission_handler/permission_handler.dart'; // location_permissions yerine
 import 'file_manager.dart';
 import 'location_callback_handler.dart';
-import 'location_service_repository.dart'; // Dosya yönetimi için
+import 'location_service_repository.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -22,7 +22,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ReceivePort port = ReceivePort();
+  final ReceivePort port = ReceivePort();
   String logStr = '';
   bool isRunning = false;
   LocationDto? lastLocation;
@@ -61,9 +61,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _updateNotificationText(LocationDto data) async {
-    if (data == null) return;
-
-    await AdvancedBackgroundLocator.updateNotificationText(title: "New Location Received", msg: "${DateTime.now()}", bigMsg: "${data.latitude}, ${data.longitude}");
+    await AdvancedBackgroundLocator.updateNotificationText(
+      title: "New Location Received",
+      msg: "${DateTime.now()}",
+      bigMsg: "${data.latitude}, ${data.longitude}",
+    );
   }
 
   Future<void> initPlatformState() async {
@@ -82,40 +84,30 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Flutter Background Locator'),
         ),
-        body: Container(
-          width: double.infinity,
+        body: Padding(
           padding: const EdgeInsets.all(22),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _onStart,
-                    child: const Text('Start'),
-                  ),
+                ElevatedButton(
+                  onPressed: _onStart,
+                  child: const Text('Start'),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: onStop,
-                    child: const Text('Stop'),
-                  ),
+                ElevatedButton(
+                  onPressed: onStop,
+                  child: const Text('Stop'),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    child: const Text('Clear Log'),
-                    onPressed: () {
-                      FileManager.clearLogFile();
-                      setState(() {
-                        logStr = '';
-                      });
-                    },
-                  ),
+                ElevatedButton(
+                  onPressed: () {
+                    FileManager.clearLogFile();
+                    setState(() {
+                      logStr = '';
+                    });
+                  },
+                  child: const Text('Clear Log'),
                 ),
-                Text("Status: ${isRunning != null ? (isRunning ? 'Is running' : 'Is not running') : "-"}"),
+                Text("Status: ${isRunning ? 'Is running' : 'Is not running'}"),
                 Text(logStr),
               ],
             ),
@@ -125,7 +117,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void onStop() async {
+  Future<void> onStop() async {
     await AdvancedBackgroundLocator.unRegisterLocationUpdate();
     final isRunningResp = await AdvancedBackgroundLocator.isServiceRunning();
     setState(() {
@@ -133,7 +125,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void _onStart() async {
+  Future<void> _onStart() async {
     if (await _checkLocationPermission()) {
       await _startLocator();
       final isRunningResp = await AdvancedBackgroundLocator.isServiceRunning();
@@ -147,24 +139,21 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<bool> _checkLocationPermission() async {
-    final access = await LocationPermissions().checkPermissionStatus();
-    switch (access) {
-      case PermissionStatus.unknown:
-      case PermissionStatus.denied:
-      case PermissionStatus.restricted:
-        final permission = await LocationPermissions().requestPermissions(
-          permissionLevel: LocationPermissionLevel.locationAlways,
-        );
-        return permission == PermissionStatus.granted;
-      case PermissionStatus.granted:
-        return true;
-      default:
-        return false;
+    final status = await Permission.location.status;
+    if (status.isGranted) {
+      return true;
     }
+
+    if (status.isDenied) {
+      final result = await Permission.location.request();
+      return result.isGranted;
+    }
+
+    return false;
   }
 
   Future<void> _startLocator() async {
-    Map<String, dynamic> data = {'countInit': 1};
+    final data = {'countInit': 1};
     await AdvancedBackgroundLocator.registerLocationUpdate(
       LocationCallbackHandler.callback,
       initCallback: LocationCallbackHandler.initCallback,
