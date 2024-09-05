@@ -1,7 +1,7 @@
 name: advanced_background_locator
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
+homepage: https://github.com/AbdurrahmanKaraoglu/advanced_background_locator
 
 environment:
   sdk: ^3.5.2
