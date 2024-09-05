@@ -1,6 +1,6 @@
 name: advanced_background_locator
 description: "Arka planda olsa dahi konum takibi yapabilen bir paket geliştirme projesi"
-version: 0.0.1
+version: 0.0.3
 homepage: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator.git"
 repository: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator.git"
 issue_tracker: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator/issues"

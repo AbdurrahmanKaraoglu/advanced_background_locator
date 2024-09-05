@@ -1,5 +1,3 @@
-Tabii ki! `README.md` dosyası, kullanıcıların paketiniz hakkında bilgi edinmesini sağlar ve nasıl kullanılacağını anlatır. Aşağıda, `advanced_background_locator` paketiniz için örnek bir `README.md` dosyası bulunmaktadır. Bu dosya, paketinizi tanıtacak ve nasıl kullanılacağına dair talimatlar verecektir.
-
 ```markdown
 # Advanced Background Locator
 
@@ -17,7 +15,7 @@ To use this package, add `advanced_background_locator` as a dependency in your `
 
 ```yaml
 dependencies:
-  advanced_background_locator: ^1.0.0
+  advanced_background_locator: ^0.0.3
 ```
 
 Run `flutter pub get` to install the package.
@@ -109,8 +107,8 @@ This package is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 For any inquiries or issues, please contact the maintainer:
 
-- **Name**: Your Name
-- **Email**: your.email@example.com
+- **Name**: Abdurrahman Karaoğlu
+- **Email**: abdurrahmank118@gmail.com
 
 ---
 
