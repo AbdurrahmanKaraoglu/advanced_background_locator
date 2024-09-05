@@ -1,4 +1,5 @@
 package com.abdurrahmankaraoglu.advanced_background_locator.provider
+import com.abdurrahmankaraoglu.advanced_background_locator.Keys
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,6 +8,23 @@ import android.location.LocationListener
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import android.os.Bundle
+
+// Helper function to convert LocationInfo to HashMap
+fun LocationInfo.toHashMap(): HashMap<String, Any> {
+    return hashMapOf(
+        Keys.ARG_IS_MOCKED to isMocked,
+        Keys.ARG_LATITUDE to latitude,
+        Keys.ARG_LONGITUDE to longitude,
+        Keys.ARG_ACCURACY to accuracy,
+        Keys.ARG_ALTITUDE to altitude,
+        Keys.ARG_SPEED to speed,
+        Keys.ARG_SPEED_ACCURACY to speedAccuracy,
+        Keys.ARG_HEADING to heading,
+        Keys.ARG_TIME to time,
+        Keys.ARG_PROVIDER to provider
+    )
+}
+
 
 class AndroidLocationProviderClient(context: Context, override var listener: LocationUpdateListener?) : BLLocationProvider, LocationListener {
     private val client: LocationManager? =
@@ -56,7 +74,7 @@ class AndroidLocationProviderClient(context: Context, override var listener: Loc
 
     override fun onLocationChanged(location: Location) {
         overrideLocation = false
-        //whenever the expected time period is reached invalidate the last known accuracy
+        // Whenever the expected time period is reached invalidate the last known accuracy
         // so that we don't just receive better and better accuracy and eventually risk receiving
         // only minimal locations
         if (location.hasAccuracy()) {
@@ -67,13 +85,13 @@ class AndroidLocationProviderClient(context: Context, override var listener: Loc
                 overrideLocation = true
             }
         }
-        //ensure that we don't get a lot of events
+        // Ensure that we don't get a lot of events
         // or if enabled, only get more accurate events within mTimeBetweenLocationEvents
         if (location.time - timeOfLastLocation >= timeBetweenLocation || overrideLocation) {
-            //be sure to store the time of receiving this event !
+            // Be sure to store the time of receiving this event!
             timeOfLastLocation = location.time
-            //send message to parent containing the location object
-            listener?.onLocationUpdated(LocationParserUtil.getLocationMapFromLocation(location))
+            // Send message to parent containing the location object
+            listener?.onLocationUpdated(LocationParserUtil.getLocationInfoFromLocation(location)?.toHashMap())
         }
     }
 
@@ -84,6 +102,6 @@ class AndroidLocationProviderClient(context: Context, override var listener: Loc
     override fun onProviderEnabled(provider: String) {
         // nop
     }
+    
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
-
 }

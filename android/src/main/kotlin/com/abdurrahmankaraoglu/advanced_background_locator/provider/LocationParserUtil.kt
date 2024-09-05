@@ -4,56 +4,60 @@ import android.location.Location
 import android.os.Build
 import com.google.android.gms.location.LocationResult
 import com.abdurrahmankaraoglu.advanced_background_locator.Keys
-import java.util.HashMap
+
+// Data class for location information
+data class LocationInfo(
+    val isMocked: Boolean,
+    val latitude: Double,
+    val longitude: Double,
+    val accuracy: Float,
+    val altitude: Double,
+    val speed: Float,
+    val speedAccuracy: Float,
+    val heading: Float,
+    val time: Double,
+    val provider: String?
+)
 
 class LocationParserUtil {
     companion object {
-        fun getLocationMapFromLocation(location: Location): HashMap<Any, Any> {
-            var speedAccuracy = 0f
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                speedAccuracy = location.speedAccuracyMetersPerSecond
-            }
-            var isMocked = false
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                isMocked = location.isFromMockProvider
+        // Function to create LocationInfo from Location
+        private fun createLocationInfo(location: Location): LocationInfo {
+            val speedAccuracy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                location.speedAccuracyMetersPerSecond
+            } else {
+                0f
             }
 
-            return hashMapOf(
-                    Keys.ARG_IS_MOCKED to isMocked,
-                    Keys.ARG_LATITUDE to location.latitude,
-                    Keys.ARG_LONGITUDE to location.longitude,
-                    Keys.ARG_ACCURACY to location.accuracy,
-                    Keys.ARG_ALTITUDE to location.altitude,
-                    Keys.ARG_SPEED to location.speed,
-                    Keys.ARG_SPEED_ACCURACY to speedAccuracy,
-                    Keys.ARG_HEADING to location.bearing,
-                    Keys.ARG_TIME to location.time.toDouble(),
-                    Keys.ARG_PROVIDER to location.provider,
+            val isMocked = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                location.isFromMockProvider
+            } else {
+                false
+            }
+
+            return LocationInfo(
+                isMocked = isMocked,
+                latitude = location.latitude,
+                longitude = location.longitude,
+                accuracy = location.accuracy,
+                altitude = location.altitude,
+                speed = location.speed,
+                speedAccuracy = speedAccuracy,
+                heading = location.bearing,
+                time = location.time.toDouble(),
+                provider = location.provider
             )
         }
 
-        fun getLocationMapFromLocation(location: LocationResult?): HashMap<Any, Any>? {
-            val firstLocation = location?.lastLocation ?: return null
+        // Function to get LocationInfo from Location
+        fun getLocationInfoFromLocation(location: Location): LocationInfo {
+            return createLocationInfo(location)
+        }
 
-            var speedAccuracy = 0f
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                speedAccuracy = firstLocation.speedAccuracyMetersPerSecond
-            }
-            var isMocked = false
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                isMocked = firstLocation.isFromMockProvider
-            }
-
-            return hashMapOf(
-                    Keys.ARG_IS_MOCKED to isMocked,
-                    Keys.ARG_LATITUDE to firstLocation.latitude,
-                    Keys.ARG_LONGITUDE to firstLocation.longitude,
-                    Keys.ARG_ACCURACY to firstLocation.accuracy,
-                    Keys.ARG_ALTITUDE to firstLocation.altitude,
-                    Keys.ARG_SPEED to firstLocation.speed,
-                    Keys.ARG_SPEED_ACCURACY to speedAccuracy,
-                    Keys.ARG_HEADING to firstLocation.bearing,
-                    Keys.ARG_TIME to firstLocation.time.toDouble())
+        // Function to get LocationInfo from LocationResult
+        fun getLocationInfoFromLocationResult(locationResult: LocationResult?): LocationInfo? {
+            val firstLocation = locationResult?.lastLocation ?: return null
+            return createLocationInfo(firstLocation)
         }
     }
 }
