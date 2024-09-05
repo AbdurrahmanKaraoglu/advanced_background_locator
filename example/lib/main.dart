@@ -174,7 +174,7 @@ class _MyAppState extends State<MyApp> {
         distanceFilter: 0,
         client: LocationClient.google,
         androidNotificationSettings: AndroidNotificationSettings(
-          notificationChannelName: 'Konum Takibi',
+          notificationChannelName: 'Location tracking',
           notificationTitle: 'Konum Takibini Başlat',
           notificationMsg: 'Arkaplanda konumu takip et',
           notificationBigMsg: 'Uygulamanın konumunuzla güncel kalmasını sağlamak için arka plan konumu açıktır.',
