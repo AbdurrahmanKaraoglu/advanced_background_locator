@@ -7,7 +7,7 @@ import com.abdurrahmankaraoglu.advanced_background_locator.provider.LocationClie
 
 class PreferencesManager {
     companion object {
-        private const val PREF_NAME = "background_locator_2"
+        private const val PREF_NAME = "advanced_background_locator"
 
         @JvmStatic
         fun saveCallbackDispatcher(context: Context, map: Map<Any, Any>) {
