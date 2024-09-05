@@ -25,18 +25,27 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    namespace 'com.abdurrahmankaraoglu.advanced_background_locator' // Namespace'i buraya ekleyin
-    compileSdkVersion 34 // En güncel SDK sürümü
+    namespace 'com.abdurrahmankaraoglu.advanced_background_locator'
+    compileSdkVersion 34
     defaultConfig {
-        minSdkVersion 21 // Minimum SDK sürümünüzü belirleyin
-        targetSdkVersion 34 // En güncel SDK sürümü
+        minSdkVersion 21
+        targetSdkVersion 34
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
     }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
-    
+
     lintOptions {
         abortOnError false
     }

@@ -9,56 +9,51 @@ import java.util.HashMap
 class LocationParserUtil {
     companion object {
         fun getLocationMapFromLocation(location: Location): HashMap<Any, Any> {
-            val speedAccuracy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                location.speedAccuracyMetersPerSecond
-            } else {
-                0f
+            var speedAccuracy = 0f
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                speedAccuracy = location.speedAccuracyMetersPerSecond
             }
-            val isMocked = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                location.isFromMockProvider
-            } else {
-                false
+            var isMocked = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                isMocked = location.isFromMockProvider
             }
 
             return hashMapOf(
-                Keys.ARG_IS_MOCKED to isMocked,
-                Keys.ARG_LATITUDE to location.latitude,
-                Keys.ARG_LONGITUDE to location.longitude,
-                Keys.ARG_ACCURACY to location.accuracy,
-                Keys.ARG_ALTITUDE to location.altitude,
-                Keys.ARG_SPEED to location.speed,
-                Keys.ARG_SPEED_ACCURACY to speedAccuracy,
-                Keys.ARG_HEADING to location.bearing,
-                Keys.ARG_TIME to location.time.toDouble(),
-                Keys.ARG_PROVIDER to location.provider,
+                    Keys.ARG_IS_MOCKED to isMocked,
+                    Keys.ARG_LATITUDE to location.latitude,
+                    Keys.ARG_LONGITUDE to location.longitude,
+                    Keys.ARG_ACCURACY to location.accuracy,
+                    Keys.ARG_ALTITUDE to location.altitude,
+                    Keys.ARG_SPEED to location.speed,
+                    Keys.ARG_SPEED_ACCURACY to speedAccuracy,
+                    Keys.ARG_HEADING to location.bearing,
+                    Keys.ARG_TIME to location.time.toDouble(),
+                    Keys.ARG_PROVIDER to location.provider,
             )
         }
 
-        fun getLocationMapFromLocation(locationResult: LocationResult?): HashMap<Any, Any>? {
-            val firstLocation = locationResult?.lastLocation ?: return null
+        fun getLocationMapFromLocation(location: LocationResult?): HashMap<Any, Any>? {
+            val firstLocation = location?.lastLocation ?: return null
 
-            val speedAccuracy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                firstLocation.speedAccuracyMetersPerSecond
-            } else {
-                0f
+            var speedAccuracy = 0f
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                speedAccuracy = firstLocation.speedAccuracyMetersPerSecond
             }
-            val isMocked = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                firstLocation.isFromMockProvider
-            } else {
-                false
+            var isMocked = false
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                isMocked = firstLocation.isFromMockProvider
             }
 
             return hashMapOf(
-                Keys.ARG_IS_MOCKED to isMocked,
-                Keys.ARG_LATITUDE to firstLocation.latitude,
-                Keys.ARG_LONGITUDE to firstLocation.longitude,
-                Keys.ARG_ACCURACY to firstLocation.accuracy,
-                Keys.ARG_ALTITUDE to firstLocation.altitude,
-                Keys.ARG_SPEED to firstLocation.speed,
-                Keys.ARG_SPEED_ACCURACY to speedAccuracy,
-                Keys.ARG_HEADING to firstLocation.bearing,
-                Keys.ARG_TIME to firstLocation.time.toDouble()
-            )
+                    Keys.ARG_IS_MOCKED to isMocked,
+                    Keys.ARG_LATITUDE to firstLocation.latitude,
+                    Keys.ARG_LONGITUDE to firstLocation.longitude,
+                    Keys.ARG_ACCURACY to firstLocation.accuracy,
+                    Keys.ARG_ALTITUDE to firstLocation.altitude,
+                    Keys.ARG_SPEED to firstLocation.speed,
+                    Keys.ARG_SPEED_ACCURACY to speedAccuracy,
+                    Keys.ARG_HEADING to firstLocation.bearing,
+                    Keys.ARG_TIME to firstLocation.time.toDouble())
         }
     }
 }

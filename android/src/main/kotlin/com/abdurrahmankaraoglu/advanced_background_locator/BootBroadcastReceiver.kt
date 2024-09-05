@@ -6,7 +6,7 @@ import android.content.Intent
 
 class BootBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
+        if (intent.action == "android.intent.action.BOOT_COMPLETED") {
             BackgroundLocatorPlugin.registerAfterBoot(context)
         }
     }
