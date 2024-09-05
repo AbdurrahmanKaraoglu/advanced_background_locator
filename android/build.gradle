@@ -25,6 +25,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace 'com.abdurrahmankaraoglu.advanced_background_locator' // Namespace'i buraya ekleyin
     compileSdkVersion 34 // En güncel SDK sürümü
     defaultConfig {
         minSdkVersion 21 // Minimum SDK sürümünüzü belirleyin
