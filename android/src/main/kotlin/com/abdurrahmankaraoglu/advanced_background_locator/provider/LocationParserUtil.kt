@@ -3,26 +3,11 @@ package com.abdurrahmankaraoglu.advanced_background_locator.provider
 import android.location.Location
 import android.os.Build
 import com.google.android.gms.location.LocationResult
-import com.abdurrahmankaraoglu.advanced_background_locator.Keys
-
-// Data class for location information
-data class LocationInfo(
-    val isMocked: Boolean,
-    val latitude: Double,
-    val longitude: Double,
-    val accuracy: Float,
-    val altitude: Double,
-    val speed: Float,
-    val speedAccuracy: Float,
-    val heading: Float,
-    val time: Double,
-    val provider: String?
-)
 
 class LocationParserUtil {
     companion object {
-        // Function to create LocationInfo from Location
-        private fun createLocationInfo(location: Location): LocationInfo {
+        // Function to create a Map from Location
+        private fun createLocationMap(location: Location): Map<String, Any> {
             val speedAccuracy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 location.speedAccuracyMetersPerSecond
             } else {
@@ -34,30 +19,31 @@ class LocationParserUtil {
             } else {
                 false
             }
+            val locationMap = mutableMapOf<String, Any>()
+            locationMap["isMocked"] = isMocked
+            locationMap["latitude"] = location.latitude
+            locationMap["longitude"] = location.longitude
+            locationMap["accuracy"] = location.accuracy
+            locationMap["altitude"] = location.altitude
+            locationMap["speed"] = location.speed
+            locationMap["speedAccuracy"] = speedAccuracy
+            locationMap["heading"] = location.bearing
+            locationMap["time"] = location.time.toDouble()
+            locationMap["provider"] = location.provider ?: ""
 
-            return LocationInfo(
-                isMocked = isMocked,
-                latitude = location.latitude,
-                longitude = location.longitude,
-                accuracy = location.accuracy,
-                altitude = location.altitude,
-                speed = location.speed,
-                speedAccuracy = speedAccuracy,
-                heading = location.bearing,
-                time = location.time.toDouble(),
-                provider = location.provider
-            )
+            return locationMap
+        }
+        
+
+        // Function to get a Map from Location
+        fun getLocationMapFromLocation(location: Location): Map<String, Any> {
+            return createLocationMap(location)
         }
 
-        // Function to get LocationInfo from Location
-        fun getLocationInfoFromLocation(location: Location): LocationInfo {
-            return createLocationInfo(location)
-        }
-
-        // Function to get LocationInfo from LocationResult
-        fun getLocationInfoFromLocationResult(locationResult: LocationResult?): LocationInfo? {
+        // Function to get a Map from LocationResult
+        fun getLocationMapFromLocationResult(locationResult: LocationResult?): Map<String, Any>? {
             val firstLocation = locationResult?.lastLocation ?: return null
-            return createLocationInfo(firstLocation)
+            return createLocationMap(firstLocation)
         }
     }
 }

@@ -76,7 +76,7 @@ class AndroidLocationProviderClient(context: Context, override var listener: Loc
             // Be sure to store the time of receiving this event!
             timeOfLastLocation = location.time
             // Send message to parent containing the location object
-            listener?.onLocationUpdated(LocationParserUtil.getLocationInfoFromLocation(location))
+            listener?.onLocationUpdated(LocationParserUtil.getLocationMapFromLocation(location))
         }
     }
 
