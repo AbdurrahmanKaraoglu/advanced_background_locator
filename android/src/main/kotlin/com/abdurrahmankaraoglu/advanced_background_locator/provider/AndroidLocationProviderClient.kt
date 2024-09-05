@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import android.os.Bundle
 
 // Helper function to convert LocationInfo to HashMap
-fun LocationInfo.toHashMap(): HashMap<String, Any> {
+fun LocationInfo.toHashMap(): HashMap<Any, Any> {
     return hashMapOf(
         Keys.ARG_IS_MOCKED to isMocked,
         Keys.ARG_LATITUDE to latitude,
