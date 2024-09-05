@@ -1,15 +1,15 @@
 group 'com.abdurrahmankaraoglu.advanced_background_locator'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 buildscript {
-    ext.kotlin_version = '1.8.0' // En son Kotlin sürümünü kullanın
+    ext.kotlin_version = '1.8.0'
     repositories {
         google()
-        mavenCentral() // jcenter() yerine mavenCentral() kullanın
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.2' // En son Gradle sürümünü kullanın
+        classpath 'com.android.tools.build:gradle:8.0.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -17,7 +17,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        mavenCentral() // jcenter() yerine mavenCentral() kullanın
+        mavenCentral()
     }
 }
 
@@ -25,11 +25,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 34 // En son SDK sürümünü kullanın
-    targetSdkVersion 34 // En son SDK sürümünü kullanın
-
+    compileSdkVersion 34 // En güncel SDK sürümü
     defaultConfig {
-        minSdkVersion 21 // Daha güncel bir minimum SDK sürümü kullanabilirsiniz
+        minSdkVersion 21 // Minimum SDK sürümünüzü belirleyin
+        targetSdkVersion 34 // En güncel SDK sürümü
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -38,13 +37,13 @@ android {
     }
     
     lintOptions {
-        abortOnError false // Lint hataları derlemeyi durdurmasın
+        abortOnError false
     }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.google.android.gms:play-services-location:21.0.1"
-    implementation 'com.google.code.gson:gson:2.10.1' // Daha güncel Gson sürümünü kullanın
-    implementation 'com.google.android.material:material:1.8.0' // Daha güncel Material sürümünü kullanın
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.google.android.material:material:1.8.0'
 }
