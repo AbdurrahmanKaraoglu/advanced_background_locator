@@ -329,54 +329,25 @@ class IsolateHolderService : MethodChannel.MethodCallHandler, LocationUpdateList
         }
     }
 
-    // private fun sendLocationEvent(result: Map<*, *>) {
-    //     //https://github.com/flutter/plugins/pull/1641
-    //     //https://github.com/flutter/flutter/issues/36059
-    //     //https://github.com/flutter/plugins/pull/1641/commits/4358fbba3327f1fa75bc40df503ca5341fdbb77d
-    //     // new version of flutter can not invoke method from background thread
-
-    //     if (backgroundEngine != null) {
-    //         context?.let {
-    //             val backgroundChannel =
-    //                 MethodChannel(
-    //                     getBinaryMessenger(it)!!,
-    //                     Keys.BACKGROUND_CHANNEL_ID
-    //                 )
-    //             Handler(it.mainLooper)
-    //                 .post {
-    //                     Log.d("plugin", "sendLocationEvent $result")
-    //                     backgroundChannel.invokeMethod(Keys.BCM_SEND_LOCATION, result)
-    //                 }
-    //         }
-    //     }
-    // }
-
     private fun sendLocationEvent(result: Map<*, *>) {
-    // Flutter'ın MethodChannel ile doğru çalışıp çalışmadığını kontrol edelim.
-    if (backgroundEngine != null) {
-        context?.let {
-            // BinaryMessenger alınırken null kontrolü yapılmalı
-            val binaryMessenger = backgroundEngine?.dartExecutor?.binaryMessenger
-            if (binaryMessenger != null) {
-                val backgroundChannel = MethodChannel(binaryMessenger, Keys.BACKGROUND_CHANNEL_ID)
-                
-                // Ana thread üzerinde çalışıp çalışmadığını kontrol edelim
-                Handler(Looper.getMainLooper()).post {
-                    try {
+        //https://github.com/flutter/plugins/pull/1641
+        //https://github.com/flutter/flutter/issues/36059
+        //https://github.com/flutter/plugins/pull/1641/commits/4358fbba3327f1fa75bc40df503ca5341fdbb77d
+        // new version of flutter can not invoke method from background thread
+
+        if (backgroundEngine != null) {
+            context?.let {
+                val backgroundChannel =
+                    MethodChannel(
+                        getBinaryMessenger(it)!!,
+                        Keys.BACKGROUND_CHANNEL_ID
+                    )
+                Handler(it.mainLooper)
+                    .post {
                         Log.d("plugin", "sendLocationEvent $result")
                         backgroundChannel.invokeMethod(Keys.BCM_SEND_LOCATION, result)
-                    } catch (e: Exception) {
-                        Log.e("plugin", "Error sending location event: ${e.message}", e)
                     }
-                }
-            } else {
-                Log.e("plugin", "BinaryMessenger is null")
             }
         }
-    } else {
-        Log.e("plugin", "BackgroundEngine is null")
     }
 }
-
-}
-

@@ -36,7 +36,7 @@ class LocationParserUtil {
         
 
         // Function to get a Map from Location
-        fun getLocationMapFromLocation(location: Location): Map<String, Any> {
+        fun getLocationMapFromLocation(location: Location): Map<String, Any>? {
             return createLocationMap(location)
         }
 
