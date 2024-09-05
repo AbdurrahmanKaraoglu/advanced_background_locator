@@ -1,7 +1,13 @@
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:advanced_background_locator/advanced_background_locator.dart';
+import 'package:advanced_background_locator/location_dto.dart';
+import 'package:advanced_background_locator/settings/android_settings.dart';
+import 'package:advanced_background_locator/settings/ios_settings.dart';
+import 'package:advanced_background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:location_permissions/location_permissions.dart';
 import 'file_manager.dart';
 import 'location_callback_handler.dart';
 import 'location_service_repository.dart'; // Dosya yönetimi için
@@ -9,15 +15,17 @@ import 'location_service_repository.dart'; // Dosya yönetimi için
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   ReceivePort port = ReceivePort();
   String logStr = '';
-  bool isRunning;
-  LocationDto lastLocation;
+  bool isRunning = false;
+  LocationDto? lastLocation;
 
   @override
   void initState() {
@@ -41,8 +49,8 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> updateUI(dynamic data) async {
     final log = await FileManager.readLogFile();
-    LocationDto locationDto = (data != null) ? LocationDto.fromJson(data) : null;
-    await _updateNotificationText(locationDto);
+    LocationDto? locationDto = (data != null) ? LocationDto.fromJson(data) : null;
+    await _updateNotificationText(locationDto!);
 
     setState(() {
       if (data != null) {
@@ -61,9 +69,9 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlatformState() async {
     await AdvancedBackgroundLocator.initialize();
     logStr = await FileManager.readLogFile();
-    final _isRunning = await AdvancedBackgroundLocator.isServiceRunning();
+    final isRunningResp = await AdvancedBackgroundLocator.isServiceRunning();
     setState(() {
-      isRunning = _isRunning;
+      isRunning = isRunningResp;
     });
   }
 
@@ -119,18 +127,18 @@ class _MyAppState extends State<MyApp> {
 
   void onStop() async {
     await AdvancedBackgroundLocator.unRegisterLocationUpdate();
-    final _isRunning = await AdvancedBackgroundLocator.isServiceRunning();
+    final isRunningResp = await AdvancedBackgroundLocator.isServiceRunning();
     setState(() {
-      isRunning = _isRunning;
+      isRunning = isRunningResp;
     });
   }
 
   void _onStart() async {
     if (await _checkLocationPermission()) {
       await _startLocator();
-      final _isRunning = await AdvancedBackgroundLocator.isServiceRunning();
+      final isRunningResp = await AdvancedBackgroundLocator.isServiceRunning();
       setState(() {
-        isRunning = _isRunning;
+        isRunning = isRunningResp;
         lastLocation = null;
       });
     } else {
@@ -162,13 +170,13 @@ class _MyAppState extends State<MyApp> {
       initCallback: LocationCallbackHandler.initCallback,
       initDataCallback: data,
       disposeCallback: LocationCallbackHandler.disposeCallback,
-      iosSettings: IOSSettings(
+      iosSettings: const IOSSettings(
         accuracy: LocationAccuracy.NAVIGATION,
         distanceFilter: 0,
         stopWithTerminate: true,
       ),
       autoStop: false,
-      androidSettings: AndroidSettings(
+      androidSettings: const AndroidSettings(
         accuracy: LocationAccuracy.NAVIGATION,
         interval: 5,
         distanceFilter: 0,

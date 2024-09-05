@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:advanced_background_locator/location_dto.dart';
 import 'package:example/file_manager.dart';
 
 class LocationServiceRepository {

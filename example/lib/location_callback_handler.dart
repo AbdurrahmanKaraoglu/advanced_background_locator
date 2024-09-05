@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:advanced_background_locator/location_dto.dart';
 import 'package:example/location_service_repository.dart';
 import 'package:flutter/material.dart';
 
