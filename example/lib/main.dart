@@ -41,7 +41,10 @@ class _MyAppState extends State<MyApp> {
 
     // Port dinleme
     port.listen((dynamic data) async {
-      await updateUI(data);
+      if (data != null) {
+        debugPrint('Data: $data');
+        await updateUI(data);
+      }
     });
 
     initPlatformState();
