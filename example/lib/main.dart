@@ -39,12 +39,16 @@ class _MyAppState extends State<MyApp> {
     // Yeni port kaydını oluştur
     IsolateNameServer.registerPortWithName(port.sendPort, LocationServiceRepository.isolateName);
 
-    // Port dinleme
+// Dinleyici
     port.listen((dynamic data) async {
       if (data != null) {
         debugPrint('Data: $data');
         await updateUI(data);
       }
+    }, onDone: () {
+      debugPrint('Port closed.');
+    }, onError: (error) {
+      debugPrint('Error: $error');
     });
 
     initPlatformState();
