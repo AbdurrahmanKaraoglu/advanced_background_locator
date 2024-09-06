@@ -1,4 +1,4 @@
-package com.abdurrahmankaraoglu.advanced_background_locator.provider
+package abdurrahmankaraoglu.app.advanced_background_locator.provider
 
 enum class LocationClient(val value: Int) {
     Google(0), Android(1);

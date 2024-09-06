@@ -1,4 +1,4 @@
-package com.abdurrahmankaraoglu.advanced_background_locator.provider
+package abdurrahmankaraoglu.app.advanced_background_locator.provider
 
 interface BLLocationProvider {
     var listener: LocationUpdateListener?

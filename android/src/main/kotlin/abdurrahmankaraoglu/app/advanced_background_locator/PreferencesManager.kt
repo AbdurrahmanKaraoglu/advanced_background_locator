@@ -1,9 +1,9 @@
-package com.abdurrahmankaraoglu.advanced_background_locator
+package abdurrahmankaraoglu.app.advanced_background_locator
 
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.abdurrahmankaraoglu.advanced_background_locator.provider.LocationClient
+import abdurrahmankaraoglu.app.advanced_background_locator.provider.LocationClient
 
 class PreferencesManager {
     companion object {

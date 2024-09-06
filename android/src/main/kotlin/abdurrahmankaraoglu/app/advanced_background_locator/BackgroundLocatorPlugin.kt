@@ -1,4 +1,4 @@
-package com.abdurrahmankaraoglu.advanced_background_locator
+package abdurrahmankaraoglu.app.advanced_background_locator
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -19,8 +19,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
-import com.abdurrahmankaraoglu.advanced_background_locator.pluggables.DisposePluggable
-import com.abdurrahmankaraoglu.advanced_background_locator.pluggables.InitPluggable
+import abdurrahmankaraoglu.app.advanced_background_locator.pluggables.DisposePluggable
+import abdurrahmankaraoglu.app.advanced_background_locator.pluggables.InitPluggable
 
 class BackgroundLocatorPlugin
     : MethodCallHandler, FlutterPlugin, PluginRegistry.NewIntentListener, ActivityAware {

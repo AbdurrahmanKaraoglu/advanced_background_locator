@@ -19,8 +19,6 @@ class AdvancedBackgroundLocator {
     await _channel.invokeMethod(Keys.METHOD_PLUGIN_INITIALIZE_SERVICE, {Keys.ARG_CALLBACK_DISPATCHER: callback.toRawHandle()});
   }
 
-  static WidgetsBinding? get _widgetsBinding => WidgetsBinding.instance;
-
   static Future<void> registerLocationUpdate(void Function(LocationDto) callback,
       {void Function(Map<String, dynamic>)? initCallback,
       Map<String, dynamic> initDataCallback = const {},
@@ -29,7 +27,7 @@ class AdvancedBackgroundLocator {
       AndroidSettings androidSettings = const AndroidSettings(),
       IOSSettings iosSettings = const IOSSettings()}) async {
     if (autoStop) {
-      _widgetsBinding!.addObserver(AutoStopHandler());
+      WidgetsBinding.instance.addObserver(AutoStopHandler());
     }
 
     final args = SettingsUtil.getArgumentsMap(

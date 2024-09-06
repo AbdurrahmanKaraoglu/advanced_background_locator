@@ -5,4 +5,4 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback
 import io.flutter.plugins.pathprovider.PathProviderPlugin
 import io.flutter.view.FlutterMain
-import com.abdurrahmankaraoglu.advanced_background_locator.IsolateHolderService
+import abdurrahmankaraoglu.app.advanced_background_locator.IsolateHolderService

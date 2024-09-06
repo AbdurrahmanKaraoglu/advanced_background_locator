@@ -1,4 +1,4 @@
-package com.abdurrahmankaraoglu.advanced_background_locator.provider
+package abdurrahmankaraoglu.app.advanced_background_locator.provider
 
 import android.location.Location
 import android.os.Build

@@ -1,4 +1,4 @@
-package com.abdurrahmankaraoglu.advanced_background_locator
+package abdurrahmankaraoglu.app.advanced_background_locator
 
 import android.app.*
 import android.Manifest
@@ -16,10 +16,10 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import com.abdurrahmankaraoglu.advanced_background_locator.pluggables.DisposePluggable
-import com.abdurrahmankaraoglu.advanced_background_locator.pluggables.InitPluggable
-import com.abdurrahmankaraoglu.advanced_background_locator.pluggables.Pluggable
-import com.abdurrahmankaraoglu.advanced_background_locator.provider.*
+import abdurrahmankaraoglu.app.advanced_background_locator.pluggables.DisposePluggable
+import abdurrahmankaraoglu.app.advanced_background_locator.pluggables.InitPluggable
+import abdurrahmankaraoglu.app.advanced_background_locator.pluggables.Pluggable
+import abdurrahmankaraoglu.app.advanced_background_locator.provider.*
 import java.util.HashMap
 import androidx.core.app.ActivityCompat
 import android.os.Looper
@@ -316,11 +316,17 @@ class IsolateHolderService : MethodChannel.MethodCallHandler, LocationUpdateList
                         )
                     } as Long
 
-                val result: Map<*, *> =
-                    hashMapOf(
+                // val result: Map<*, *> =
+                //     hashMapOf(
+                //         Keys.ARG_CALLBACK to callback,
+                //         Keys.ARG_LOCATION to location
+                //     )
+
+                    val result :  Map<*, *> = mapOf(
                         Keys.ARG_CALLBACK to callback,
                         Keys.ARG_LOCATION to location
                     )
+                     
 
                 sendLocationEvent(result)
             }

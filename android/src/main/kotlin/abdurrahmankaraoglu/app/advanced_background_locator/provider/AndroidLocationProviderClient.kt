@@ -1,5 +1,5 @@
-package com.abdurrahmankaraoglu.advanced_background_locator.provider
-import com.abdurrahmankaraoglu.advanced_background_locator.Keys
+package abdurrahmankaraoglu.app.advanced_background_locator.provider
+import abdurrahmankaraoglu.app.advanced_background_locator.Keys
 
 import android.annotation.SuppressLint
 import android.content.Context

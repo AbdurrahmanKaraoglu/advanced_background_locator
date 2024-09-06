@@ -6,7 +6,7 @@ repository: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator.
 issue_tracker: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator/issues"
 
 environment:
-  sdk: ^3.5.2
+  sdk: '>=3.4.3 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
@@ -18,7 +18,7 @@ license: MIT
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^3.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -28,7 +28,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.abdurrahmankaraoglu.advanced_background_locator
+        package: abdurrahmankaraoglu.app.advanced_background_locator
         pluginClass: BackgroundLocatorPlugin
       ios:
         pluginClass: BackgroundLocatorPlugin

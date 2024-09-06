@@ -1,4 +1,4 @@
-package com.abdurrahmankaraoglu.advanced_background_locator
+package abdurrahmankaraoglu.app.advanced_background_locator
 
 import android.Manifest
 import android.content.Context
@@ -12,8 +12,8 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.view.FlutterCallbackInformation
-import com.abdurrahmankaraoglu.advanced_background_locator.IsolateHolderService.Companion.isServiceInitialized
-import com.abdurrahmankaraoglu.advanced_background_locator.provider.LocationRequestOptions
+import abdurrahmankaraoglu.app.advanced_background_locator.IsolateHolderService.Companion.isServiceInitialized
+import abdurrahmankaraoglu.app.advanced_background_locator.provider.LocationRequestOptions
 import java.lang.RuntimeException
 import java.util.concurrent.atomic.AtomicBoolean
 

@@ -28,7 +28,9 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize|layoutDirection|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true">
             
             <!-- Splash Screen -->
             <meta-data
@@ -49,9 +51,9 @@
 
         <!-- Boot Broadcast Receiver -->
         <receiver 
-            android:name="com.abdurrahmankaraoglu.advanced_background_locator.BootBroadcastReceiver"
+            android:name="abdurrahmankaraoglu.app.advanced_background_locator.BootBroadcastReceiver"
             android:enabled="true"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -59,9 +61,9 @@
 
         <!-- Foreground Service -->
         <service
-            android:name="com.abdurrahmankaraoglu.advanced_background_locator.IsolateHolderService"
+            android:name="abdurrahmankaraoglu.app.advanced_background_locator.IsolateHolderService"
             android:permission="android.permission.FOREGROUND_SERVICE"
-            android:exported="false"
+            android:exported="true"
             android:foregroundServiceType="location" />
 
         <!-- Flutter Gereksinimleri -->

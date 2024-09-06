@@ -1,4 +1,4 @@
-package com.abdurrahmankaraoglu.advanced_background_locator.pluggables
+package abdurrahmankaraoglu.app.advanced_background_locator.pluggables
 
 import android.content.Context
 

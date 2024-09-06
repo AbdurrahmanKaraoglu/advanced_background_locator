@@ -1,8 +1,8 @@
 // ignore_for_file: constant_identifier_names
 
 class Keys {
-  static const String CHANNEL_ID = 'com.abdurrahmankaraoglu/locator_plugin';
-  static const String BACKGROUND_CHANNEL_ID = 'com.abdurrahmankaraoglu/locator_plugin_background';
+  static const String CHANNEL_ID = 'app.abdurrahmankaraoglu/locator_plugin';
+  static const String BACKGROUND_CHANNEL_ID = 'app.abdurrahmankaraoglu/locator_plugin_background';
 
   static const String METHOD_SERVICE_INITIALIZED = 'LocatorService.initialized';
   static const String METHOD_PLUGIN_INITIALIZE_SERVICE = 'LocatorPlugin.initializeService';

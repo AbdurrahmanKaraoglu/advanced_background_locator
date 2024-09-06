@@ -15,8 +15,8 @@ NSString *const kInitCallbackKey = @"init_callback_handle_key";
 NSString *const kInitDataCallbackKey = @"init_data_callback_key";
 NSString *const kDisposeCallbackKey = @"dispose_callback_handle_key";
 NSString *const kDistanceFilterKey = @"distance_filter_key";
-NSString *const kChannelId = @"com.abdurrahmankaraoglu/locator_plugin";
-NSString *const kBackgroundChannelId = @"com.abdurrahmankaraoglu/locator_plugin_background";
+NSString *const kChannelId = @"app.abdurrahmankaraoglu/locator_plugin";
+NSString *const kBackgroundChannelId = @"app.abdurrahmankaraoglu/locator_plugin_background";
 
 NSString *const kMethodServiceInitialized = @"LocatorService.initialized";
 NSString *const kMethodPluginInitializeService = @"LocatorPlugin.initializeService";

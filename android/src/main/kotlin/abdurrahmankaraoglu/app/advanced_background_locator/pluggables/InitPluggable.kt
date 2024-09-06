@@ -1,11 +1,11 @@
-package com.abdurrahmankaraoglu.advanced_background_locator.pluggables
+package abdurrahmankaraoglu.app.advanced_background_locator.pluggables
 
 import android.content.Context
 import android.os.Handler
 import io.flutter.plugin.common.MethodChannel
-import com.abdurrahmankaraoglu.advanced_background_locator.IsolateHolderService
-import com.abdurrahmankaraoglu.advanced_background_locator.Keys
-import com.abdurrahmankaraoglu.advanced_background_locator.PreferencesManager
+import abdurrahmankaraoglu.app.advanced_background_locator.IsolateHolderService
+import abdurrahmankaraoglu.app.advanced_background_locator.Keys
+import abdurrahmankaraoglu.app.advanced_background_locator.PreferencesManager
 
 class InitPluggable : Pluggable {
     private var isInitCallbackCalled = false

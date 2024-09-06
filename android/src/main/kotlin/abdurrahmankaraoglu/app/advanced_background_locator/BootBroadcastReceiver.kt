@@ -1,4 +1,4 @@
-package com.abdurrahmankaraoglu.advanced_background_locator
+package abdurrahmankaraoglu.app.advanced_background_locator
 
 import android.content.BroadcastReceiver
 import android.content.Context
