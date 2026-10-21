@@ -12,6 +12,8 @@ import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
@@ -171,16 +173,19 @@ class IsolateHolderService : MethodChannel.MethodCallHandler, LocationUpdateList
 
         when (intent.action) {
             ACTION_SHUTDOWN -> shutdownHolderService()
-            ACTION_START -> {
-                if (isServiceRunning) {
-                    stopTracking()
-                }
-                isServiceRunning = true
-                startHolderService(intent)
-            }
+            ACTION_START -> restartTracking(intent)
         }
 
         return START_STICKY
+    }
+
+    /** Starts tracking with the given start intent, replacing a running session. */
+    internal fun restartTracking(intent: Intent) {
+        if (isServiceRunning) {
+            stopTracking()
+        }
+        isServiceRunning = true
+        startHolderService(intent)
     }
 
     private fun startHolderService(intent: Intent) {
@@ -286,7 +291,15 @@ class IsolateHolderService : MethodChannel.MethodCallHandler, LocationUpdateList
     }
 
     private fun getLocationClient(context: Context): BLLocationProvider {
-        return when (PreferencesManager.getLocationClient(context)) {
+        val client = PreferencesManager.getLocationClient(context)
+        if (client == LocationClient.Google &&
+            GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) != ConnectionResult.SUCCESS
+        ) {
+            // e.g. devices without Google Play services; the fused provider would never report.
+            Log.w(TAG, "Google Play services unavailable, falling back to LocationManager")
+            return AndroidLocationProviderClient(context, this)
+        }
+        return when (client) {
             LocationClient.Google -> GoogleLocationProviderClient(context, this)
             LocationClient.Android -> AndroidLocationProviderClient(context, this)
         }

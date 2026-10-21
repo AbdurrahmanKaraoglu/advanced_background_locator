@@ -17,6 +17,7 @@
                settings:(NSDictionary *_Nonnull)settings;
 - (void) removeLocator;
 - (BOOL) isServiceRunning;
+- (BOOL) isLocatorServiceStarted;
 - (void) setServiceRunning:(BOOL)value;
 
 @end

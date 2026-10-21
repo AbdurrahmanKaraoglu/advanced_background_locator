@@ -19,7 +19,7 @@ Your callbacks run in a **separate background isolate**, not in your UI isolate.
 
 ```yaml
 dependencies:
-  advanced_background_locator: ^0.1.0
+  advanced_background_locator: ^0.1.1
 ```
 
 ## Android setup
@@ -154,6 +154,12 @@ Future<void> start() async {
 
 Future<void> stop() => AdvancedBackgroundLocator.unRegisterLocationUpdate();
 ```
+
+Call `initialize()` before `registerLocationUpdate()`, otherwise a `NOT_INITIALIZED` `PlatformException` is thrown.
+Calling `registerLocationUpdate()` again while tracking is running restarts tracking with the new settings and callbacks
+(on Android the previous `disposeCallback` and the new `initCallback` are called).
+
+On Android, `LocationClient.google` falls back to the platform `LocationManager` on devices without Google Play services.
 
 Other APIs:
 

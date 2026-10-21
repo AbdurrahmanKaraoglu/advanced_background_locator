@@ -80,10 +80,15 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 }
 
 -(void)applicationWillTerminate:(UIApplication *)application {
-    [self observeRegionForLocation:_lastLocation];
-    if([PreferencesManager isStopWithTerminate]){
-        [self removeLocator];
+    if (![PreferencesManager isServiceRunning]) {
+        // Tracking was stopped; a monitored region would relaunch the app and resume it.
+        return;
     }
+    if ([PreferencesManager isStopWithTerminate]) {
+        [self removeLocator];
+        return;
+    }
+    [self observeRegionForLocation:_lastLocation];
 }
 
 - (void) observeRegionForLocation:(CLLocation *)location {
@@ -111,7 +116,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 - (void)locationManager:(CLLocationManager *)manager
      didUpdateLocations:(NSArray<CLLocation *> *)locations {
     if (locations.count > 0) {
-        CLLocation* location = [locations objectAtIndex:0];
+        // Locations are ordered oldest first; report the most recent one.
+        CLLocation* location = [locations lastObject];
         [self prepareLocationMap: location];
         if([PreferencesManager isObservingRegion]) {
             [self observeRegionForLocation: location];
@@ -264,6 +270,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     @synchronized(self) {
         [PreferencesManager setServiceRunning:value];
     }
+}
+
+- (BOOL)isLocatorServiceStarted {
+    return _headlessRunnerStarted;
 }
 
 - (BOOL)isServiceRunning{

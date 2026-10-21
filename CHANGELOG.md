@@ -1,3 +1,12 @@
+## 0.1.1
+
+### Fixed
+- iOS: tracking stopped with `unRegisterLocationUpdate` could resume after the app was terminated, because a region was still monitored on termination.
+- iOS: when several locations were delivered at once the oldest one was reported instead of the most recent one.
+- Android: calling `registerLocationUpdate` while tracking was running silently ignored the new settings and callbacks; it now restarts tracking with them.
+- Android/iOS: `registerLocationUpdate` without a prior `initialize()` now throws a `NOT_INITIALIZED` `PlatformException` instead of never delivering locations.
+- Android: `LocationClient.google` falls back to `LocationManager` when Google Play services are unavailable.
+
 ## 0.1.0
 
 ### Breaking

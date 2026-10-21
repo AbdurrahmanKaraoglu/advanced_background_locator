@@ -42,10 +42,11 @@ class BackgroundLocatorPlugin
                 return
             }
 
-            if (IsolateHolderService.isServiceRunning) {
-                // The service is running already
-                Log.d(TAG, "Locator service is already running")
-                result?.success(true)
+            if (!context.getSharedPreferences(Keys.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
+                            .contains(Keys.CALLBACK_DISPATCHER_HANDLE_KEY)) {
+                result?.error("NOT_INITIALIZED",
+                        "Call AdvancedBackgroundLocator.initialize() before registerLocationUpdate().",
+                        null)
                 return
             }
 
@@ -71,6 +72,16 @@ class BackgroundLocatorPlugin
                     args[Keys.ARG_INIT_DATA_CALLBACK] as? Map<*, *>)
             PreferencesManager.setCallbackHandle(context, Keys.DISPOSE_CALLBACK_HANDLE_KEY,
                     (args[Keys.ARG_DISPOSE_CALLBACK] as? Number)?.toLong())
+
+            val runningService = IsolateHolderService.instance
+            if (IsolateHolderService.isServiceRunning && runningService != null) {
+                // Apply the new settings and callbacks to the running service.
+                Log.d(TAG, "Locator service is already running, restarting tracking")
+                runningService.restartTracking(buildStartIntent(context, settings))
+                PreferencesManager.setTrackingEnabled(context, true)
+                result?.success(true)
+                return
+            }
 
             if (!startIsolateService(context, settings)) {
                 result?.error("SERVICE_START_FAILED",

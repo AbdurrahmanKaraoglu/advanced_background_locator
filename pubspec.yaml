@@ -1,6 +1,6 @@
 name: advanced_background_locator
 description: "Flutter plugin for location tracking that keeps running in the background (Android foreground service, iOS background location updates)."
-version: 0.1.0
+version: 0.1.1
 repository: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator.git"
 issue_tracker: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator/issues"
 

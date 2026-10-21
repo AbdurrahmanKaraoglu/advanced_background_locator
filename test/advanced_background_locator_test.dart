@@ -168,6 +168,15 @@ void main() {
       expect(calls, isEmpty);
     });
 
+    test('registerLocationUpdate surfaces native errors', () async {
+      reply = (_) => throw PlatformException(code: 'NOT_INITIALIZED');
+
+      await expectLater(
+        AdvancedBackgroundLocator.registerLocationUpdate(onLocation),
+        throwsA(isA<PlatformException>().having((e) => e.code, 'code', 'NOT_INITIALIZED')),
+      );
+    });
+
     test('isServiceRunning and isRegisterLocationUpdate handle null replies', () async {
       expect(await AdvancedBackgroundLocator.isServiceRunning(), isFalse);
       expect(await AdvancedBackgroundLocator.isRegisterLocationUpdate(), isFalse);

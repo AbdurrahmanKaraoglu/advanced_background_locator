@@ -21,6 +21,12 @@
     } else if ([kMethodServiceInitialized isEqualToString:call.method]) {
         result(nil);
     } else if ([kMethodPluginRegisterLocationUpdate isEqualToString:call.method]) {
+        if (![delegate isLocatorServiceStarted]) {
+            result([FlutterError errorWithCode:@"NOT_INITIALIZED"
+                                       message:@"Call AdvancedBackgroundLocator.initialize() before registerLocationUpdate()."
+                                       details:nil]);
+            return;
+        }
         int64_t callbackHandle = [[arguments objectForKey:kArgCallback] longLongValue];
         int64_t initCallbackHandle = [[arguments objectForKey:kArgInitCallback] longLongValue];
         NSDictionary *initialDataDictionary = [arguments objectForKey:kArgInitDataCallback];
