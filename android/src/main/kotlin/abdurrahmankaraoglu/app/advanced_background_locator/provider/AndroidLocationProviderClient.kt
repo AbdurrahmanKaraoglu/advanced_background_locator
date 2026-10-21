@@ -1,5 +1,4 @@
 package abdurrahmankaraoglu.app.advanced_background_locator.provider
-import abdurrahmankaraoglu.app.advanced_background_locator.Keys
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -15,7 +14,6 @@ class AndroidLocationProviderClient(context: Context, override var listener: Loc
     private val client: LocationManager? =
             ContextCompat.getSystemService(context, LocationManager::class.java)
 
-    private var overrideLocation: Boolean = false
     private var timeOfLastLocation: Long = 0L
     private var timeBetweenLocation: Long = 0L
 
@@ -58,21 +56,8 @@ class AndroidLocationProviderClient(context: Context, override var listener: Loc
     }
 
     override fun onLocationChanged(location: Location) {
-        overrideLocation = false
-        // Whenever the expected time period is reached invalidate the last known accuracy
-        // so that we don't just receive better and better accuracy and eventually risk receiving
-        // only minimal locations
-        if (location.hasAccuracy()) {
-            if (!location.accuracy.isNaN() &&
-                    location.accuracy != 0.0f &&
-                    !location.accuracy.isFinite() &&
-                    !location.accuracy.isInfinite()) {
-                overrideLocation = true
-            }
-        }
-        // Ensure that we don't get a lot of events
-        // or if enabled, only get more accurate events within mTimeBetweenLocationEvents
-        if (location.time - timeOfLastLocation >= timeBetweenLocation || overrideLocation) {
+        // GPS and network providers both report; only forward one location per interval.
+        if (location.time - timeOfLastLocation >= timeBetweenLocation) {
             // Be sure to store the time of receiving this event!
             timeOfLastLocation = location.time
             // Send message to parent containing the location object
@@ -88,5 +73,6 @@ class AndroidLocationProviderClient(context: Context, override var listener: Loc
         // nop
     }
     
+    @Deprecated("Deprecated in Java")
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
 }

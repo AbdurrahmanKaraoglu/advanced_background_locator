@@ -14,7 +14,7 @@ class DisposePluggable : Pluggable {
 
     override fun onServiceDispose(context: Context) {
         (PreferencesManager.getCallbackHandle(context, Keys.DISPOSE_CALLBACK_HANDLE_KEY))?.let { disposeCallback ->
-            IsolateHolderService.getBinaryMessenger(context)?.let { binaryMessenger ->
+            IsolateHolderService.getBinaryMessenger()?.let { binaryMessenger ->
                 val backgroundChannel = MethodChannel(binaryMessenger, Keys.BACKGROUND_CHANNEL_ID)
                 Handler(context.mainLooper)
                     .post {

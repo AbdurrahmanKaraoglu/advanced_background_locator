@@ -37,6 +37,8 @@ FOUNDATION_EXPORT NSString *const kArgSpeed;
 FOUNDATION_EXPORT NSString *const kArgSpeedAccuracy;
 FOUNDATION_EXPORT NSString *const kArgHeading;
 FOUNDATION_EXPORT NSString *const kArgTime;
+FOUNDATION_EXPORT NSString *const kArgIsMocked;
+FOUNDATION_EXPORT NSString *const kArgProvider;
 FOUNDATION_EXPORT NSString *const kArgCallback;
 FOUNDATION_EXPORT NSString *const kArgInitCallback;
 FOUNDATION_EXPORT NSString *const kArgInitDataCallback;

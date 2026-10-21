@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'keys.dart';
 
 class LocationDto {
@@ -10,6 +8,8 @@ class LocationDto {
   final double speed;
   final double speedAccuracy;
   final double heading;
+
+  /// Milliseconds since epoch.
   final double time;
   final bool isMocked;
   final String provider;
@@ -27,21 +27,26 @@ class LocationDto {
     this.provider,
   );
 
+  /// Parses the location map sent by the native side.
+  ///
+  /// Numbers may arrive as `int` or `double` and optional fields (`is_mocked`,
+  /// `provider`, `speed_accuracy`) may be missing, e.g. on iOS.
   factory LocationDto.fromJson(Map<dynamic, dynamic> json) {
-    bool isLocationMocked = Platform.isAndroid ? json[Keys.ARG_IS_MOCKED] : false;
     return LocationDto._(
-      json[Keys.ARG_LATITUDE],
-      json[Keys.ARG_LONGITUDE],
-      json[Keys.ARG_ACCURACY],
-      json[Keys.ARG_ALTITUDE],
-      json[Keys.ARG_SPEED],
-      json[Keys.ARG_SPEED_ACCURACY],
-      json[Keys.ARG_HEADING],
-      json[Keys.ARG_TIME],
-      isLocationMocked,
-      json[Keys.ARG_PROVIDER],
+      _toDouble(json[Keys.ARG_LATITUDE]),
+      _toDouble(json[Keys.ARG_LONGITUDE]),
+      _toDouble(json[Keys.ARG_ACCURACY]),
+      _toDouble(json[Keys.ARG_ALTITUDE]),
+      _toDouble(json[Keys.ARG_SPEED]),
+      _toDouble(json[Keys.ARG_SPEED_ACCURACY]),
+      _toDouble(json[Keys.ARG_HEADING]),
+      _toDouble(json[Keys.ARG_TIME]),
+      json[Keys.ARG_IS_MOCKED] == true,
+      json[Keys.ARG_PROVIDER] as String? ?? '',
     );
   }
+
+  static double _toDouble(Object? value) => value is num ? value.toDouble() : 0.0;
 
   Map<String, dynamic> toJson() {
     return {

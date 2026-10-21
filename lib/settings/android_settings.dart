@@ -2,6 +2,7 @@ import 'package:advanced_background_locator/keys.dart';
 import 'package:advanced_background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
 
+
 enum LocationClient { google, android }
 
 class AndroidNotificationSettings {
@@ -17,7 +18,7 @@ class AndroidNotificationSettings {
   ///
   /// [notificationMsg] Message of notification. Only applies for android. Default is 'Track location in background'.
   ///
-  /// [notificationBigMsg] Message to be displayed in the expanded content area of the notification. Only applies for android. Default is 'Background location is on to keep the app up-tp-date with your location. This is required for main features to work properly when the app is not running.'.
+  /// [notificationBigMsg] Message to be displayed in the expanded content area of the notification. Only applies for android. Default is 'Background location is on to keep the app up-to-date with your location. This is required for main features to work properly when the app is not running.'.
   ///
   /// [notificationIcon] Icon name for notification. Only applies for android. The icon should be in 'mipmap' Directory.
   /// Default is app icon. Icon must comply to android rules to be displayed (transparent background and black/white shape)
@@ -30,7 +31,7 @@ class AndroidNotificationSettings {
       {this.notificationChannelName = 'Location tracking',
       this.notificationTitle = 'Start Location Tracking',
       this.notificationMsg = 'Track location in background',
-      this.notificationBigMsg = 'Background location is on to keep the app up-tp-date with your location. This is required for main features to work properly when the app is not running.',
+      this.notificationBigMsg = 'Background location is on to keep the app up-to-date with your location. This is required for main features to work properly when the app is not running.',
       this.notificationIcon = '',
       this.notificationIconColor = Colors.grey,
       this.notificationTapCallback});
@@ -44,7 +45,7 @@ class AndroidSettings extends LocatorSettings {
 
   /// [accuracy] The accuracy of location, Default is max accuracy NAVIGATION.
   ///
-  /// [interval] Interval of retrieving location update in second. Only applies for android. Default is 5 second.
+  /// [interval] Interval of retrieving location update in seconds. Only applies for android. Default is 5 seconds.
   ///
   /// [distanceFilter] distance in meter to trigger location update, Default is 0 meter.
   ///
@@ -70,7 +71,7 @@ class AndroidSettings extends LocatorSettings {
       Keys.SETTINGS_ANDROID_NOTIFICATION_MSG: androidNotificationSettings.notificationMsg,
       Keys.SETTINGS_ANDROID_NOTIFICATION_BIG_MSG: androidNotificationSettings.notificationBigMsg,
       Keys.SETTINGS_ANDROID_NOTIFICATION_ICON: androidNotificationSettings.notificationIcon,
-      Keys.SETTINGS_ANDROID_NOTIFICATION_ICON_COLOR: androidNotificationSettings.notificationIconColor.value,
+      Keys.SETTINGS_ANDROID_NOTIFICATION_ICON_COLOR: androidNotificationSettings.notificationIconColor.toARGB32(),
       Keys.SETTINGS_ANDROID_LOCATION_CLIENT: client.index
     };
   }

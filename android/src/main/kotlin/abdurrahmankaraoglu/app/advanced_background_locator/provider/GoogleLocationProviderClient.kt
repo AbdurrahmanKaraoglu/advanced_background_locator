@@ -2,6 +2,7 @@ package abdurrahmankaraoglu.app.advanced_background_locator.provider
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Looper
 import com.google.android.gms.location.*
 
 class GoogleLocationProviderClient(context: Context, override var listener: LocationUpdateListener?) : BLLocationProvider {
@@ -14,19 +15,15 @@ class GoogleLocationProviderClient(context: Context, override var listener: Loca
 
     @SuppressLint("MissingPermission")
     override fun requestLocationUpdates(request: LocationRequestOptions) {
-        client.requestLocationUpdates(getLocationRequest(request), locationCallback, null)
+        client.requestLocationUpdates(getLocationRequest(request), locationCallback, Looper.getMainLooper())
     }
 
     private fun getLocationRequest(request: LocationRequestOptions): LocationRequest {
-        val locationRequest = LocationRequest.create()
-
-        locationRequest.interval = request.interval
-        locationRequest.fastestInterval = request.interval
-        locationRequest.maxWaitTime = request.interval
-        locationRequest.priority = request.accuracy
-        locationRequest.smallestDisplacement = request.distanceFilter
-
-        return locationRequest
+        return LocationRequest.Builder(request.accuracy, request.interval)
+            .setMinUpdateIntervalMillis(request.interval)
+            .setMaxUpdateDelayMillis(request.interval)
+            .setMinUpdateDistanceMeters(request.distanceFilter)
+            .build()
     }
 }
 

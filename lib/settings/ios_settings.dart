@@ -9,7 +9,7 @@ class IOSSettings extends LocatorSettings {
   ///
   /// [showsBackgroundLocationIndicator] The background location usage indicator is a blue bar or a blue pill in the status bar on iOS. Default is false.
   ///
-  /// [stopWithTerminate] stops the location usage when the app is on background
+  /// [stopWithTerminate] stops location updates when the app is terminated by the user.
 
   final bool showsBackgroundLocationIndicator;
   final bool stopWithTerminate;
@@ -19,7 +19,7 @@ class IOSSettings extends LocatorSettings {
     super.distanceFilter = 0,
     this.showsBackgroundLocationIndicator = false,
     this.stopWithTerminate = false,
-  }); //minutes
+  });
 
   Map<String, dynamic> toMap() {
     return {

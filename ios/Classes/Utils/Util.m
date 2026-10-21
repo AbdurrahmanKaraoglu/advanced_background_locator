@@ -6,7 +6,7 @@
 //
 
 #import "Util.h"
-#import "GLobals.h"
+#import "Globals.h"
 
 @implementation Util
 
@@ -27,8 +27,12 @@
     }
 }
 
-+ (NSDictionary<NSString *,NSNumber *> *)getLocationMap:(CLLocation *)location {
++ (NSDictionary<NSString *,id> *)getLocationMap:(CLLocation *)location {
     NSTimeInterval timeInSeconds = [location.timestamp timeIntervalSince1970];
+    BOOL isMocked = NO;
+    if (@available(iOS 15.0, *)) {
+        isMocked = location.sourceInformation.isSimulatedBySoftware;
+    }
     return @{
             kArgLatitude: @(location.coordinate.latitude),
             kArgLongitude: @(location.coordinate.longitude),
@@ -37,7 +41,9 @@
             kArgSpeed: @(location.speed),
             kArgSpeedAccuracy: @(0.0),
             kArgHeading: @(location.course),
-            kArgTime: @(((double) timeInSeconds) * 1000.0)  // in milliseconds since the epoch
+            kArgTime: @(((double) timeInSeconds) * 1000.0),  // in milliseconds since the epoch
+            kArgIsMocked: @(isMocked),
+            kArgProvider: @""
         };
 }
 

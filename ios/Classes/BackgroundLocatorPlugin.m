@@ -12,6 +12,7 @@
     NSObject<FlutterPluginRegistrar> *_registrar;
     CLLocationManager *_locationManager;
     CLLocation* _lastLocation;
+    BOOL _headlessRunnerStarted;
 }
 
 static FlutterPluginRegistrantCallback registerPlugins = nil;
@@ -86,7 +87,11 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 }
 
 - (void) observeRegionForLocation:(CLLocation *)location {
-    double distanceFilter = [PreferencesManager getDistanceFilter];
+    if (location == nil) {
+        return;
+    }
+    // A zero radius region would never be exited, keep a sane minimum.
+    double distanceFilter = MAX([PreferencesManager getDistanceFilter], 50.0);
     CLRegion* region = [[CLCircularRegion alloc] initWithCenter:location.coordinate
                                                          radius:distanceFilter
                                                      identifier:@"region"];
@@ -97,7 +102,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
 - (void) prepareLocationMap:(CLLocation*) location {
     _lastLocation = location;
-    NSDictionary<NSString*,NSNumber*>* locationMap = [Util getLocationMap:location];
+    NSDictionary<NSString*,id>* locationMap = [Util getLocationMap:location];
     
     [self sendLocationEvent:locationMap];
 }
@@ -121,7 +126,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 }
 
 #pragma mark LocatorPlugin Methods
-- (void) sendLocationEvent: (NSDictionary<NSString*,NSNumber*>*)location {
+- (void) sendLocationEvent: (NSDictionary<NSString*,id>*)location {
     NSString *isolateId = [_headlessRunner isolateId];
     if (_callbackChannel == nil || isolateId == nil) {
         return;
@@ -161,13 +166,25 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
 - (void)startLocatorService:(int64_t)handle {
     [PreferencesManager setCallbackDispatcherHandle:handle];
+    // initialize() may be called on every app start; the headless engine can only run once.
+    if (_headlessRunnerStarted) {
+        return;
+    }
     FlutterCallbackInformation *info = [FlutterCallbackCache lookupCallbackInformation:handle];
-    NSAssert(info != nil, @"failed to find callback");
-    
+    if (info == nil) {
+        NSLog(@"advanced_background_locator: failed to find callback dispatcher");
+        return;
+    }
+
     NSString *entrypoint = info.callbackName;
     NSString *uri = info.callbackLibraryPath;
     [_headlessRunner runWithEntrypoint:entrypoint libraryURI:uri];
-    NSAssert(registerPlugins != nil, @"failed to set registerPlugins");
+    _headlessRunnerStarted = YES;
+    if (registerPlugins == nil) {
+        NSLog(@"advanced_background_locator: call [BackgroundLocatorPlugin setPluginRegistrantCallback:] in AppDelegate to use plugins in the background isolate");
+        [_registrar addMethodCallDelegate:self channel:_callbackChannel];
+        return;
+    }
 
     // Once our headless runner has been started, we need to register the application's plugins
     // with the runner in order for them to work on the background isolate. `registerPlugins` is
@@ -211,7 +228,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     InitPluggable *initPluggable = [[InitPluggable alloc] init];
     [initPluggable setCallback:initCallback];
-    [initPluggable onServiceStart:initialDataDictionary];
+    [initPluggable onServiceStart:initialDataDictionary ?: @{}];
     
     DisposePluggable *disposePluggable = [[DisposePluggable alloc] init];
     [disposePluggable setCallback:disposeCallback];

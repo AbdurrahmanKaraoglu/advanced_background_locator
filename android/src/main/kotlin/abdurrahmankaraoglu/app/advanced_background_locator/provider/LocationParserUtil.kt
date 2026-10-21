@@ -2,6 +2,7 @@ package abdurrahmankaraoglu.app.advanced_background_locator.provider
 
 import android.location.Location
 import android.os.Build
+import abdurrahmankaraoglu.app.advanced_background_locator.Keys
 import com.google.android.gms.location.LocationResult
 
 class LocationParserUtil {
@@ -14,22 +15,24 @@ class LocationParserUtil {
                 0f
             }
 
-            val isMocked = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                location.isFromMockProvider
+            val isMocked = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                location.isMock
             } else {
-                false
+                @Suppress("DEPRECATION")
+                location.isFromMockProvider
             }
+            // Keys must match lib/keys.dart, numbers are sent as doubles to match LocationDto.
             val locationMap = mutableMapOf<String, Any>()
-            locationMap["isMocked"] = isMocked
-            locationMap["latitude"] = location.latitude
-            locationMap["longitude"] = location.longitude
-            locationMap["accuracy"] = location.accuracy
-            locationMap["altitude"] = location.altitude
-            locationMap["speed"] = location.speed
-            locationMap["speedAccuracy"] = speedAccuracy
-            locationMap["heading"] = location.bearing
-            locationMap["time"] = location.time.toDouble()
-            locationMap["provider"] = location.provider ?: ""
+            locationMap[Keys.ARG_IS_MOCKED] = isMocked
+            locationMap[Keys.ARG_LATITUDE] = location.latitude
+            locationMap[Keys.ARG_LONGITUDE] = location.longitude
+            locationMap[Keys.ARG_ACCURACY] = location.accuracy.toDouble()
+            locationMap[Keys.ARG_ALTITUDE] = location.altitude
+            locationMap[Keys.ARG_SPEED] = location.speed.toDouble()
+            locationMap[Keys.ARG_SPEED_ACCURACY] = speedAccuracy.toDouble()
+            locationMap[Keys.ARG_HEADING] = location.bearing.toDouble()
+            locationMap[Keys.ARG_TIME] = location.time.toDouble()
+            locationMap[Keys.ARG_PROVIDER] = location.provider ?: ""
 
             return locationMap
         }

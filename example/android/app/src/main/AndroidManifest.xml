@@ -1,76 +1,40 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.abdurrahmankaraoglu.trackerapp"
-    >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- İzinler -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--
+        The plugin manifest already declares the foreground service, the boot receiver and
+        ACCESS_FINE/COARSE_LOCATION, FOREGROUND_SERVICE(_LOCATION), WAKE_LOCK,
+        POST_NOTIFICATIONS and RECEIVE_BOOT_COMPLETED.
+        Background location has to be declared by the app (Google Play reviews its usage).
+    -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <!-- Uygulama Yapılandırması -->
     <application
         android:label="TrackerApp"
-        android:name="${applicationName}" 
-        android:icon="@mipmap/ic_launcher"
-        android:allowBackup="false"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
 
-        <!-- Ana Aktivite (MainActivity) -->
+        <!-- singleTop is required so that a notification tap reaches the running activity. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
+            android:taskAffinity=""
             android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize|layoutDirection|density|uiMode"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize"
-            android:showWhenLocked="true"
-            android:turnScreenOn="true">
-            
-            <!-- Splash Screen -->
-            <meta-data
-                android:name="io.flutter.embedding.android.SplashScreenDrawable"
-                android:resource="@drawable/launch_background" />
-            
-            <!-- Normal Tema -->
+            android:windowSoftInputMode="adjustResize">
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme" />
-            
-            <!-- Başlangıç Intent'i -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Boot Broadcast Receiver -->
-        <receiver 
-            android:name="abdurrahmankaraoglu.app.advanced_background_locator.BootBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Foreground Service -->
-        <service
-            android:name="abdurrahmankaraoglu.app.advanced_background_locator.IsolateHolderService"
-            android:permission="android.permission.FOREGROUND_SERVICE"
-            android:exported="true"
-            android:foregroundServiceType="location" />
-
-        <!-- Flutter Gereksinimleri -->
         <meta-data android:name="flutterEmbedding" android:value="2" />
     </application>
 
-    <!-- Paket Görünürlüğü Sorgusu -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>

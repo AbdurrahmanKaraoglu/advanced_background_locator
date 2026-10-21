@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:advanced_background_locator/location_dto.dart';
+import 'package:advanced_background_locator/advanced_background_locator.dart';
 import 'package:example/location_service_repository.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 @pragma('vm:entry-point')
 class LocationCallbackHandler {

@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Util : NSObject
 
 + (CLLocationAccuracy) getAccuracy:(long)key;
-+ (NSDictionary<NSString*,NSNumber*>*) getLocationMap:(CLLocation *)location;
++ (NSDictionary<NSString*,id>*) getLocationMap:(CLLocation *)location;
 
 @end
 

@@ -6,37 +6,43 @@ import 'package:flutter/widgets.dart';
 import 'keys.dart';
 import 'location_dto.dart';
 
+/// Entry point of the background isolate started by the native side.
 @pragma('vm:entry-point')
 void callbackDispatcher() {
-  const MethodChannel _backgroundChannel = MethodChannel(Keys.BACKGROUND_CHANNEL_ID);
   WidgetsFlutterBinding.ensureInitialized();
+  const MethodChannel backgroundChannel = MethodChannel(Keys.BACKGROUND_CHANNEL_ID);
 
-  _backgroundChannel.setMethodCallHandler((MethodCall call) async {
-    if (Keys.BCM_SEND_LOCATION == call.method) {
-      final Map<dynamic, dynamic> args = call.arguments;
-      final Function callback = PluginUtilities.getCallbackFromHandle(CallbackHandle.fromRawHandle(args[Keys.ARG_CALLBACK]))!;
-      final LocationDto location = LocationDto.fromJson(args[Keys.ARG_LOCATION]);
-      callback(location);
-    } else if (Keys.BCM_NOTIFICATION_CLICK == call.method) {
-      final Map<dynamic, dynamic> args = call.arguments;
-      final Function? notificationCallback = PluginUtilities.getCallbackFromHandle(CallbackHandle.fromRawHandle(args[Keys.ARG_NOTIFICATION_CALLBACK]));
-      if (notificationCallback != null) {
-        notificationCallback();
+  backgroundChannel.setMethodCallHandler(handleBackgroundMethodCall);
+  backgroundChannel.invokeMethod(Keys.METHOD_SERVICE_INITIALIZED);
+}
+
+/// Dispatches a call from the native side to the user callback whose handle it carries.
+@visibleForTesting
+Future<void> handleBackgroundMethodCall(MethodCall call) async {
+  final Map<dynamic, dynamic> args = call.arguments as Map<dynamic, dynamic>? ?? const {};
+
+  switch (call.method) {
+    case Keys.BCM_SEND_LOCATION:
+      final Function? callback = _callbackFromHandle(args[Keys.ARG_CALLBACK]);
+      final Object? location = args[Keys.ARG_LOCATION];
+      if (callback != null && location is Map) {
+        await callback(LocationDto.fromJson(location));
       }
-    } else if (Keys.BCM_INIT == call.method) {
-      final Map<dynamic, dynamic> args = call.arguments;
-      final Function? initCallback = PluginUtilities.getCallbackFromHandle(CallbackHandle.fromRawHandle(args[Keys.ARG_INIT_CALLBACK]));
-      Map<dynamic, dynamic>? data = args[Keys.ARG_INIT_DATA_CALLBACK];
-      if (initCallback != null) {
-        initCallback(data);
-      }
-    } else if (Keys.BCM_DISPOSE == call.method) {
-      final Map<dynamic, dynamic> args = call.arguments;
-      final Function? disposeCallback = PluginUtilities.getCallbackFromHandle(CallbackHandle.fromRawHandle(args[Keys.ARG_DISPOSE_CALLBACK]));
-      if (disposeCallback != null) {
-        disposeCallback();
-      }
-    }
-  });
-  _backgroundChannel.invokeMethod(Keys.METHOD_SERVICE_INITIALIZED);
+    case Keys.BCM_NOTIFICATION_CLICK:
+      await _callbackFromHandle(args[Keys.ARG_NOTIFICATION_CALLBACK])?.call();
+    case Keys.BCM_INIT:
+      final Function? initCallback = _callbackFromHandle(args[Keys.ARG_INIT_CALLBACK]);
+      final Object? data = args[Keys.ARG_INIT_DATA_CALLBACK];
+      // Platform maps arrive as Map<Object?, Object?>; the callback expects string keys.
+      await initCallback?.call(data is Map ? Map<String, dynamic>.from(data) : <String, dynamic>{});
+    case Keys.BCM_DISPOSE:
+      await _callbackFromHandle(args[Keys.ARG_DISPOSE_CALLBACK])?.call();
+  }
+}
+
+Function? _callbackFromHandle(Object? rawHandle) {
+  if (rawHandle is! int || rawHandle == 0) {
+    return null;
+  }
+  return PluginUtilities.getCallbackFromHandle(CallbackHandle.fromRawHandle(rawHandle));
 }

@@ -1,13 +1,15 @@
+// ignore_for_file: constant_identifier_names
+
 class LocationAccuracy {
   const LocationAccuracy._internal(this.value);
 
   final int value;
 
-  static const POWERSAVE = LocationAccuracy._internal(0);
-  static const LOW = LocationAccuracy._internal(1);
-  static const BALANCED = LocationAccuracy._internal(2);
-  static const HIGH = LocationAccuracy._internal(3);
-  static const NAVIGATION = LocationAccuracy._internal(4);
+  static const LocationAccuracy POWERSAVE = LocationAccuracy._internal(0);
+  static const LocationAccuracy LOW = LocationAccuracy._internal(1);
+  static const LocationAccuracy BALANCED = LocationAccuracy._internal(2);
+  static const LocationAccuracy HIGH = LocationAccuracy._internal(3);
+  static const LocationAccuracy NAVIGATION = LocationAccuracy._internal(4);
 }
 
 class LocatorSettings {

@@ -30,7 +30,7 @@
     if (!isInitCallbackCalled) {
         NSDictionary *map = @{
                          kArgInitCallback : @([PreferencesManager getCallbackHandle:kInitCallbackKey]),
-                         kArgInitDataCallback: initialDataDictionary
+                         kArgInitDataCallback: initialDataDictionary ?: @{}
                          };
         [[BackgroundLocatorPlugin getInstance] invokeMethod:kBCMInit arguments:map];
     }

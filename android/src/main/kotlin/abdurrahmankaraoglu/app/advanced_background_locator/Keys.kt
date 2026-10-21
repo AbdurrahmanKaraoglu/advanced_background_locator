@@ -157,6 +157,9 @@ class Keys {
         val BCM_DISPOSE = "BCM_DISPOSE"
 
         @JvmStatic
+        val PREF_RESTART_ON_BOOT = "restart_on_boot"
+
+        @JvmStatic
         val NOTIFICATION_ACTION = "com.abdurrahmankaraoglu.advanced_background_locator.notification"
     }
 }

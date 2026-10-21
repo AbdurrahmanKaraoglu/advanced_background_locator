@@ -2,13 +2,10 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:advanced_background_locator/advanced_background_locator.dart';
-import 'package:advanced_background_locator/location_dto.dart';
-import 'package:advanced_background_locator/settings/android_settings.dart';
-import 'package:advanced_background_locator/settings/ios_settings.dart';
-import 'package:advanced_background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart'; // location_permissions yerine
-import '../file_manager.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'file_manager.dart';
 import 'location_callback_handler.dart';
 import 'location_service_repository.dart';
 
@@ -56,11 +53,14 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> updateUI(dynamic data) async {
     final log = await FileManager.readLogFile();
-    LocationDto? locationDto = (data != null) ? LocationDto.fromJson(data) : null;
-    await _updateNotificationText(locationDto!);
+    final LocationDto? locationDto = data is Map ? LocationDto.fromJson(data) : null;
+    if (locationDto != null) {
+      await _updateNotificationText(locationDto);
+    }
+    if (!mounted) return;
 
     setState(() {
-      if (data != null) {
+      if (locationDto != null) {
         lastLocation = locationDto;
       }
       logStr = log;
@@ -77,11 +77,20 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initPlatformState() async {
     await AdvancedBackgroundLocator.initialize();
-    logStr = await FileManager.readLogFile();
+    final log = await FileManager.readLogFile();
     final isRunningResp = await AdvancedBackgroundLocator.isServiceRunning();
+    if (!mounted) return;
     setState(() {
+      logStr = log;
       isRunning = isRunningResp;
     });
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping(LocationServiceRepository.isolateName);
+    port.close();
+    super.dispose();
   }
 
   @override
@@ -127,6 +136,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> onStop() async {
     await AdvancedBackgroundLocator.unRegisterLocationUpdate();
     final isRunningResp = await AdvancedBackgroundLocator.isServiceRunning();
+    if (!mounted) return;
     setState(() {
       isRunning = isRunningResp;
     });
@@ -136,6 +146,7 @@ class _MyAppState extends State<MyApp> {
     if (await _checkLocationPermission()) {
       await _startLocator();
       final isRunningResp = await AdvancedBackgroundLocator.isServiceRunning();
+      if (!mounted) return;
       setState(() {
         isRunning = isRunningResp;
         lastLocation = null;
@@ -145,18 +156,19 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  /// Requests foreground location first; background ("Allow all the time") must be
+  /// requested separately on Android 11+ and iOS. Background access is optional:
+  /// tracking still works while the foreground service notification is shown.
   Future<bool> _checkLocationPermission() async {
-    final status = await Permission.location.status;
-    if (status.isGranted) {
-      return true;
+    final status = await Permission.locationWhenInUse.request();
+    if (!status.isGranted) {
+      return false;
     }
 
-    if (status.isDenied) {
-      final result = await Permission.location.request();
-      return result.isGranted;
-    }
-
-    return false;
+    // Android 13+: without this the foreground service notification is hidden.
+    await Permission.notification.request();
+    await Permission.locationAlways.request();
+    return true;
   }
 
   Future<void> _startLocator() async {
