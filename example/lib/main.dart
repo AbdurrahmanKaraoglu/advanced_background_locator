@@ -5,9 +5,12 @@ import 'dart:ui';
 import 'package:advanced_background_locator/advanced_background_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'file_manager.dart';
+import 'l10n/app_localizations.dart';
 import 'location_callback_handler.dart';
 import 'location_service_repository.dart';
 
@@ -51,8 +54,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Konum Takibi',
+      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      // Device languages other than Turkish fall back to English.
+      localeResolutionCallback: (locale, supported) =>
+          supported.firstWhere((l) => l.languageCode == locale?.languageCode, orElse: () => const Locale('en')),
       theme: _theme(Brightness.light),
       darkTheme: _theme(Brightness.dark),
       home: const TrackerPage(),
@@ -113,9 +126,11 @@ class _TrackerPageState extends State<TrackerPage> {
   }
 
   Future<void> _updateNotificationText(LocationDto data) async {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     await AdvancedBackgroundLocator.updateNotificationText(
-      title: 'Konum takibi aktif',
-      msg: 'Son güncelleme: ${_formatTime(DateTime.now())}',
+      title: l10n.notificationTitle,
+      msg: l10n.notificationLastUpdate(_formatTime(context, DateTime.now())),
       bigMsg: '${data.latitude.toStringAsFixed(5)}, ${data.longitude.toStringAsFixed(5)}',
     );
   }
@@ -153,7 +168,7 @@ class _TrackerPageState extends State<TrackerPage> {
     setState(() => isBusy = true);
     try {
       if (!await _checkLocationPermission()) {
-        _showMessage('Konum izni verilmedi.');
+        if (mounted) _showMessage(AppLocalizations.of(context).permissionDenied);
         return;
       }
       await _startLocator();
@@ -197,6 +212,8 @@ class _TrackerPageState extends State<TrackerPage> {
   }
 
   Future<void> _startLocator() async {
+    // Notification texts are sent to the native side, so they are resolved here in the UI locale.
+    final l10n = AppLocalizations.of(context);
     final data = {'countInit': 1};
     await AdvancedBackgroundLocator.registerLocationUpdate(
       LocationCallbackHandler.callback,
@@ -209,16 +226,16 @@ class _TrackerPageState extends State<TrackerPage> {
         stopWithTerminate: true,
       ),
       autoStop: false,
-      androidSettings: const AndroidSettings(
+      androidSettings: AndroidSettings(
         accuracy: LocationAccuracy.NAVIGATION,
         interval: 3,
         distanceFilter: 0,
         client: LocationClient.android,
         androidNotificationSettings: AndroidNotificationSettings(
-          notificationChannelName: 'Konum takibi',
-          notificationTitle: 'Konum takibi aktif',
-          notificationMsg: 'Konumunuz arka planda kaydediliyor',
-          notificationBigMsg: 'Uygulama kapalıyken de rotanızın kaydedilmesi için arka plan konumu açık.',
+          notificationChannelName: l10n.notificationChannelName,
+          notificationTitle: l10n.notificationTitle,
+          notificationMsg: l10n.notificationMessage,
+          notificationBigMsg: l10n.notificationBigMessage,
           notificationIconColor: _brandColor,
           notificationTapCallback: LocationCallbackHandler.notificationCallback,
         ),
@@ -229,6 +246,7 @@ class _TrackerPageState extends State<TrackerPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final entries = _LogEntry.parse(logStr);
 
     return Scaffold(
@@ -236,13 +254,13 @@ class _TrackerPageState extends State<TrackerPage> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Konum Takibi', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-            Text('Arka plan konum servisi', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(l10n.appTitle, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+            Text(l10n.appSubtitle, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
           ],
         ),
         actions: [
           IconButton(
-            tooltip: 'Kaydı temizle',
+            tooltip: l10n.clearLog,
             onPressed: entries.isEmpty ? null : _clearLog,
             icon: const Icon(Icons.delete_sweep_outlined),
           ),
@@ -256,16 +274,16 @@ class _TrackerPageState extends State<TrackerPage> {
             const SizedBox(height: 16),
             _ActionButton(isRunning: isRunning, isBusy: isBusy, onStart: _onStart, onStop: onStop),
             const SizedBox(height: 28),
-            const _SectionHeader(title: 'Son konum'),
+            _SectionHeader(title: l10n.sectionLastLocation),
             const SizedBox(height: 8),
             _LocationCard(location: lastLocation, isRunning: isRunning),
             const SizedBox(height: 28),
-            _SectionHeader(title: 'Etkinlik kaydı', trailing: entries.isEmpty ? null : '${entries.length} kayıt'),
+            _SectionHeader(title: l10n.sectionActivityLog, trailing: entries.isEmpty ? null : l10n.logCount(entries.length)),
             const SizedBox(height: 8),
             _LogCard(entries: entries),
             const SizedBox(height: 20),
             Text(
-              'Aralık 3 sn  ·  Doğruluk: Navigasyon  ·  İstemci: Android',
+              l10n.settingsSummary,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
@@ -276,9 +294,12 @@ class _TrackerPageState extends State<TrackerPage> {
   }
 }
 
-String _two(int v) => v.toString().padLeft(2, '0');
+String _formatTime(BuildContext context, DateTime t) =>
+    DateFormat.Hms(Localizations.localeOf(context).toLanguageTag()).format(t);
 
-String _formatTime(DateTime t) => '${_two(t.hour)}:${_two(t.minute)}:${_two(t.second)}';
+String _formatNumber(BuildContext context, double value, int decimals) =>
+    NumberFormat.decimalPatternDigits(locale: Localizations.localeOf(context).toLanguageTag(), decimalDigits: decimals)
+        .format(value);
 
 class _StatusCard extends StatelessWidget {
   const _StatusCard({required this.isRunning});
@@ -289,6 +310,7 @@ class _StatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
     final Color accent = isRunning ? const Color(0xFF1B873F) : scheme.outline;
 
     return Card(
@@ -314,12 +336,12 @@ class _StatusCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isRunning ? 'Takip aktif' : 'Takip kapalı',
+                    isRunning ? l10n.statusActive : l10n.statusInactive,
                     style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    isRunning ? 'Uygulama arka plandayken de konum kaydediliyor.' : 'Konum kaydı için takibi başlatın.',
+                    isRunning ? l10n.statusActiveDescription : l10n.statusInactiveDescription,
                     style: theme.textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
                   ),
                 ],
@@ -338,7 +360,7 @@ class _StatusCard extends StatelessWidget {
                   Container(width: 8, height: 8, decoration: BoxDecoration(color: accent, shape: BoxShape.circle)),
                   const SizedBox(width: 6),
                   Text(
-                    isRunning ? 'Canlı' : 'Pasif',
+                    isRunning ? l10n.badgeLive : l10n.badgeIdle,
                     style: theme.textTheme.labelMedium?.copyWith(color: accent, fontWeight: FontWeight.w600),
                   ),
                 ],
@@ -374,7 +396,7 @@ class _ActionButton extends StatelessWidget {
       onPressed: isBusy ? null : (isRunning ? onStop : onStart),
       style: isRunning ? FilledButton.styleFrom(backgroundColor: scheme.error, foregroundColor: scheme.onError) : null,
       icon: icon,
-      label: Text(isRunning ? 'Takibi durdur' : 'Takibi başlat'),
+      label: Text(isRunning ? AppLocalizations.of(context).stopTracking : AppLocalizations.of(context).startTracking),
     );
   }
 }
@@ -415,22 +437,24 @@ class _LocationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final loc = location;
     if (loc == null) {
       return _EmptyCard(
         icon: Icons.satellite_alt_outlined,
-        message: isRunning ? 'İlk konum bekleniyor…' : 'Henüz konum alınmadı.',
+        message: isRunning ? l10n.waitingForLocation : l10n.noLocationYet,
       );
     }
 
     final time = DateTime.fromMillisecondsSinceEpoch(loc.time.toInt());
+    // Coordinates keep the decimal point in every language so they can be copied as-is.
     final metrics = <(String, String)>[
-      ('Enlem', loc.latitude.toStringAsFixed(5)),
-      ('Boylam', loc.longitude.toStringAsFixed(5)),
-      ('Doğruluk', '± ${loc.accuracy.toStringAsFixed(0)} m'),
-      ('Hız', '${(loc.speed * 3.6).toStringAsFixed(1)} km/sa'),
-      ('Yükseklik', '${loc.altitude.toStringAsFixed(0)} m'),
-      ('Zaman', _formatTime(time)),
+      (l10n.metricLatitude, loc.latitude.toStringAsFixed(5)),
+      (l10n.metricLongitude, loc.longitude.toStringAsFixed(5)),
+      (l10n.metricAccuracy, '± ${l10n.unitMeters(_formatNumber(context, loc.accuracy, 0))}'),
+      (l10n.metricSpeed, l10n.unitSpeed(_formatNumber(context, loc.speed * 3.6, 1))),
+      (l10n.metricAltitude, l10n.unitMeters(_formatNumber(context, loc.altitude, 0))),
+      (l10n.metricTime, _formatTime(context, time)),
     ];
 
     return Card(
@@ -457,7 +481,7 @@ class _LocationCard extends StatelessWidget {
                   Icon(Icons.info_outline, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   const SizedBox(width: 6),
                   Text(
-                    'Kaynak: ${loc.provider.isEmpty ? '-' : loc.provider}${loc.isMocked ? '  ·  Sahte konum' : ''}',
+                    '${l10n.locationSource(loc.provider.isEmpty ? '-' : loc.provider)}${loc.isMocked ? '  ·  ${l10n.mockedLocation}' : ''}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ],
@@ -512,9 +536,9 @@ class _LogEntry {
       final line = raw.trim();
       if (line.isEmpty || line.startsWith('---')) continue;
       if (line.startsWith('start:')) {
-        entries.add(_LogEntry(title: 'Oturum başladı', subtitle: line.substring(6).trim(), kind: _LogKind.start));
+        entries.add(_LogEntry(title: '', subtitle: line.substring(6).trim(), kind: _LogKind.start));
       } else if (line.startsWith('end:')) {
-        entries.add(_LogEntry(title: 'Oturum bitti', subtitle: line.substring(4).trim(), kind: _LogKind.end));
+        entries.add(_LogEntry(title: '', subtitle: line.substring(4).trim(), kind: _LogKind.end));
       } else {
         final match = _positionLine.firstMatch(line);
         if (match == null) continue;
@@ -540,8 +564,9 @@ class _LogCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (entries.isEmpty) {
-      return const _EmptyCard(icon: Icons.receipt_long_outlined, message: 'Kayıt yok.');
+      return _EmptyCard(icon: Icons.receipt_long_outlined, message: l10n.noLogEntries);
     }
 
     final theme = Theme.of(context);
@@ -565,7 +590,11 @@ class _LogCard extends StatelessWidget {
                 color: visible[i].kind == _LogKind.position ? scheme.primary : scheme.onSurfaceVariant,
               ),
               title: Text(
-                visible[i].title,
+                switch (visible[i].kind) {
+                  _LogKind.start => l10n.sessionStarted,
+                  _LogKind.end => l10n.sessionEnded,
+                  _LogKind.position => visible[i].title,
+                },
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: visible[i].kind == _LogKind.position ? FontWeight.w500 : FontWeight.w600,
                   fontFeatures: const [FontFeature.tabularFigures()],
@@ -578,7 +607,7 @@ class _LogCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(12),
               child: Text(
-                '+${entries.length - _maxVisible} eski kayıt',
+                l10n.olderEntries(entries.length - _maxVisible),
                 style: theme.textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
             ),

@@ -159,6 +159,10 @@ Call `initialize()` before `registerLocationUpdate()`, otherwise a `NOT_INITIALI
 Calling `registerLocationUpdate()` again while tracking is running restarts tracking with the new settings and callbacks
 (on Android the previous `disposeCallback` and the new `initCallback` are called).
 
+The plugin itself shows no text except the Android foreground service notification. Its default texts are English; pass
+`AndroidNotificationSettings` (and `updateNotificationText`) strings in your app's language. The example app does this with
+`gen-l10n` (English and Turkish).
+
 On Android, `LocationClient.google` falls back to the platform `LocationManager` on devices without Google Play services.
 
 Other APIs:

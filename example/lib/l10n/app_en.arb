@@ -1,0 +1,70 @@
+{
+  "@@locale": "en",
+  "appTitle": "Location Tracking",
+  "appSubtitle": "Background location service",
+  "clearLog": "Clear log",
+  "statusActive": "Tracking active",
+  "statusInactive": "Tracking off",
+  "statusActiveDescription": "Your location is recorded even when the app is in the background.",
+  "statusInactiveDescription": "Start tracking to record your location.",
+  "badgeLive": "Live",
+  "badgeIdle": "Idle",
+  "startTracking": "Start tracking",
+  "stopTracking": "Stop tracking",
+  "sectionLastLocation": "Last location",
+  "sectionActivityLog": "Activity log",
+  "logCount": "{count, plural, =1{1 entry} other{{count} entries}}",
+  "@logCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "waitingForLocation": "Waiting for the first location…",
+  "noLocationYet": "No location received yet.",
+  "noLogEntries": "No entries.",
+  "olderEntries": "+{count} older entries",
+  "@olderEntries": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "metricLatitude": "Latitude",
+  "metricLongitude": "Longitude",
+  "metricAccuracy": "Accuracy",
+  "metricSpeed": "Speed",
+  "metricAltitude": "Altitude",
+  "metricTime": "Time",
+  "unitMeters": "{value} m",
+  "@unitMeters": {
+    "placeholders": {
+      "value": { "type": "String" }
+    }
+  },
+  "unitSpeed": "{value} km/h",
+  "@unitSpeed": {
+    "placeholders": {
+      "value": { "type": "String" }
+    }
+  },
+  "locationSource": "Source: {provider}",
+  "@locationSource": {
+    "placeholders": {
+      "provider": { "type": "String" }
+    }
+  },
+  "mockedLocation": "Mock location",
+  "sessionStarted": "Session started",
+  "sessionEnded": "Session ended",
+  "settingsSummary": "Interval 3 s  ·  Accuracy: Navigation  ·  Client: Android",
+  "permissionDenied": "Location permission was not granted.",
+  "notificationChannelName": "Location tracking",
+  "notificationTitle": "Location tracking active",
+  "notificationMessage": "Your location is being recorded in the background",
+  "notificationBigMessage": "Background location is on so your route is recorded even when the app is closed.",
+  "notificationLastUpdate": "Last update: {time}",
+  "@notificationLastUpdate": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  }
+}
