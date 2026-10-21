@@ -67,7 +67,8 @@ class LocationServiceRepository {
   }
 
   static String formatDateLog(DateTime date) {
-    return '${date.hour}:${date.minute}:${date.second}';
+    String two(int v) => v.toString().padLeft(2, '0');
+    return '${two(date.hour)}:${two(date.minute)}:${two(date.second)}';
   }
 
   static String formatLog(LocationDto locationDto) {
