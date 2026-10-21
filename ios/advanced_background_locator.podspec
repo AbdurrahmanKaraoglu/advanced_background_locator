@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'advanced_background_locator'
-  s.version          = '0.1.1'
+  s.version          = '0.1.2'
   s.summary          = 'A Flutter plugin for getting location updates even when the app is in the background.'
   s.description      = <<-DESC
 Flutter plugin for background location tracking.

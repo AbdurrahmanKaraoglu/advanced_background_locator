@@ -19,7 +19,7 @@ Your callbacks run in a **separate background isolate**, not in your UI isolate.
 
 ```yaml
 dependencies:
-  advanced_background_locator: ^0.1.1
+  advanced_background_locator: ^0.1.2
 ```
 
 ## Android setup

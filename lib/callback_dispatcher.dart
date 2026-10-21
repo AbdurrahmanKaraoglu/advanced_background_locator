@@ -12,8 +12,21 @@ void callbackDispatcher() {
   WidgetsFlutterBinding.ensureInitialized();
   const MethodChannel backgroundChannel = MethodChannel(Keys.BACKGROUND_CHANNEL_ID);
 
-  backgroundChannel.setMethodCallHandler(handleBackgroundMethodCall);
+  backgroundChannel.setMethodCallHandler(serializeCalls(handleBackgroundMethodCall));
   backgroundChannel.invokeMethod(Keys.METHOD_SERVICE_INITIALIZED);
+}
+
+/// Runs [handler] for one call at a time, in arrival order, so an async
+/// `initCallback` finishes before the first location reaches the callback.
+@visibleForTesting
+Future<void> Function(MethodCall) serializeCalls(Future<void> Function(MethodCall) handler) {
+  Future<void> previous = Future<void>.value();
+  return (MethodCall call) {
+    final Future<void> current = previous.then((_) => handler(call));
+    // A failing callback must not block the calls queued after it.
+    previous = current.catchError((Object _) {});
+    return current;
+  };
 }
 
 /// Dispatches a call from the native side to the user callback whose handle it carries.

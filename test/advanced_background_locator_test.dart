@@ -252,6 +252,29 @@ void main() {
       expect(received, ['dispose', 'tap']);
     });
 
+    test('serializeCalls runs calls one at a time in order', () async {
+      final List<String> order = [];
+      final handler = serializeCalls((call) async {
+        order.add('start ${call.method}');
+        if (call.method == 'init') {
+          await Future<void>.delayed(const Duration(milliseconds: 20));
+        }
+        if (call.method == 'fail') {
+          throw StateError('boom');
+        }
+        order.add('end ${call.method}');
+      });
+
+      final init = handler(const MethodCall('init'));
+      final failing = handler(const MethodCall('fail'));
+      final location = handler(const MethodCall('location'));
+
+      await init;
+      await expectLater(failing, throwsStateError);
+      await location;
+      expect(order, ['start init', 'end init', 'start fail', 'start location', 'end location']);
+    });
+
     test('ignores missing or empty callback handles', () async {
       await handleBackgroundMethodCall(const MethodCall(Keys.BCM_NOTIFICATION_CLICK, <Object?, Object?>{}));
       await handleBackgroundMethodCall(const MethodCall(Keys.BCM_DISPOSE, {Keys.ARG_DISPOSE_CALLBACK: 0}));

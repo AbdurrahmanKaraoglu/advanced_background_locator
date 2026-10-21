@@ -1,3 +1,9 @@
+## 0.1.2
+
+### Fixed
+- Android: the first location (e.g. the last known location reported right away) could reach the callback before `initCallback` ran. Location updates are now requested after the init callback is queued.
+- Dart: background callbacks now run one at a time in arrival order, so an async `initCallback` completes before the first location callback starts (previously they could interleave, e.g. corrupting concurrent file writes).
+
 ## 0.1.1
 
 ### Fixed

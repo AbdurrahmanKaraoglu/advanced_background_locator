@@ -101,7 +101,8 @@ class IsolateHolderService : MethodChannel.MethodCallHandler, LocationUpdateList
         }
     }
 
-    private fun start() {
+    /** Acquires the wake lock, goes foreground and runs the init callback. Returns false on failure. */
+    private fun start(): Boolean {
         wakeLock?.let { if (it.isHeld) it.release() }
         wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager)
             .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK_TAG).apply {
@@ -112,10 +113,11 @@ class IsolateHolderService : MethodChannel.MethodCallHandler, LocationUpdateList
         // Starting Service as foreground with a notification prevent service from closing
         if (!promoteToForeground()) {
             shutdownHolderService()
-            return
+            return false
         }
 
         pluggables.forEach { it.onServiceStart(this) }
+        return true
     }
 
     private fun getNotification(): Notification {
@@ -202,10 +204,6 @@ class IsolateHolderService : MethodChannel.MethodCallHandler, LocationUpdateList
             intent.getLongExtra(Keys.SETTINGS_ANDROID_NOTIFICATION_ICON_COLOR, 0).toInt()
         wakeLockTime = intent.getIntExtra(Keys.SETTINGS_ANDROID_WAKE_LOCK_TIME, 60) * 60 * 1000L
 
-        locatorClient = getLocationClient(this).also {
-            it.requestLocationUpdates(getLocationRequest(intent))
-        }
-
         // Fill pluggable list
         pluggables.clear()
         if (intent.hasExtra(Keys.SETTINGS_INIT_PLUGGABLE)) {
@@ -216,7 +214,15 @@ class IsolateHolderService : MethodChannel.MethodCallHandler, LocationUpdateList
             pluggables.add(DisposePluggable())
         }
 
-        start()
+        if (!start()) {
+            return
+        }
+
+        // Request updates only after the init callback was queued: the platform provider reports
+        // the last known location immediately, which must not reach Dart before initCallback.
+        locatorClient = getLocationClient(this).also {
+            it.requestLocationUpdates(getLocationRequest(intent))
+        }
     }
 
     /** Looks the icon up in mipmap, then drawable, falling back to the app icon. */
