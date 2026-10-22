@@ -1,16 +1,15 @@
-# example
+# advanced_background_locator example
 
-A new Flutter project.
+A Material 3 app (English and Turkish) that starts and stops background location tracking,
+shows the last location and an activity log written by the background isolate.
 
-## Getting Started
+- `lib/main.dart`: UI, permission requests and `registerLocationUpdate` settings.
+- `lib/location_callback_handler.dart`: background callbacks (`@pragma('vm:entry-point')`).
+- `lib/location_service_repository.dart`: writes locations to a log file and forwards them to the UI through a `SendPort`.
 
-This project is a starting point for a Flutter application.
+```bash
+flutter run
+```
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+On an emulator, send locations from *Extended controls → Location*, or play a route with
+[`route_simulator`](https://pub.dev/packages/route_simulator).

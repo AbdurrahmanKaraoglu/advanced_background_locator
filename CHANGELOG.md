@@ -1,3 +1,14 @@
+## 0.1.3
+
+### Added
+- iOS: Swift Package Manager support (`ios/advanced_background_locator/Package.swift`). CocoaPods keeps working; the sources moved to `ios/advanced_background_locator/Sources/`. Not build-verified on iOS yet.
+- API documentation (dartdoc) for the public API.
+- Screenshots and a "Use with other packages" section (advanced_geofence, route_simulator) in the README.
+
+### Changed
+- Android: `play-services-location` 21.4.0, `core-ktx` 1.18.0, `gson` 2.14.0.
+- Example: modern Material 3 UI with English and Turkish localization.
+
 ## 0.1.2
 
 ### Fixed

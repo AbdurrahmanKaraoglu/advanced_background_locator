@@ -1,7 +1,7 @@
 #import "BackgroundLocatorPlugin.h"
 #import "Globals.h"
-#import "Utils/Util.h"
-#import "Preferences/PreferencesManager.h"
+#import "Util.h"
+#import "PreferencesManager.h"
 #import "InitPluggable.h"
 #import "DisposePluggable.h"
 

@@ -1,6 +1,6 @@
 name: advanced_background_locator
 description: "Flutter plugin for location tracking that keeps running in the background (Android foreground service, iOS background location updates)."
-version: 0.1.2
+version: 0.1.3
 repository: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator.git"
 issue_tracker: "https://github.com/AbdurrahmanKaraoglu/advanced_background_locator/issues"
 
@@ -17,6 +17,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+
+screenshots:
+  - description: "Example app before tracking starts"
+    path: doc/screenshots/idle.png
+  - description: "Example app receiving background locations"
+    path: doc/screenshots/tracking.png
+  - description: "Android foreground service notification"
+    path: doc/screenshots/notification.png
 
 topics:
   - location

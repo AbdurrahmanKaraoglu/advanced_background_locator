@@ -1,17 +1,35 @@
 import 'keys.dart';
 
+/// A location delivered to the background callback.
 class LocationDto {
+  /// Latitude in degrees.
   final double latitude;
+
+  /// Longitude in degrees.
   final double longitude;
+
+  /// Estimated horizontal accuracy radius in meters.
   final double accuracy;
+
+  /// Altitude in meters above the WGS 84 ellipsoid.
   final double altitude;
+
+  /// Speed in meters per second.
   final double speed;
+
+  /// Estimated speed accuracy in meters per second (0 on iOS).
   final double speedAccuracy;
+
+  /// Direction of travel in degrees, clockwise from north.
   final double heading;
 
   /// Milliseconds since epoch.
   final double time;
+
+  /// Whether the location comes from a mock provider (Android, iOS 15+).
   final bool isMocked;
+
+  /// Name of the location provider, e.g. `gps` or `fused`; empty on iOS.
   final String provider;
 
   LocationDto._(
@@ -46,8 +64,10 @@ class LocationDto {
     );
   }
 
-  static double _toDouble(Object? value) => value is num ? value.toDouble() : 0.0;
+  static double _toDouble(Object? value) =>
+      value is num ? value.toDouble() : 0.0;
 
+  /// Serializes the location with the same keys [LocationDto.fromJson] reads.
   Map<String, dynamic> toJson() {
     return {
       Keys.ARG_LATITUDE: latitude,

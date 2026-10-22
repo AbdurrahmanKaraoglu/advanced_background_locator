@@ -2,18 +2,18 @@ import 'package:advanced_background_locator/keys.dart';
 
 import 'locator_settings.dart';
 
+/// iOS specific tracking settings.
 class IOSSettings extends LocatorSettings {
-  /// [accuracy] The accuracy of location, Default is max accuracy NAVIGATION.
-  ///
-  /// [distanceFilter] distance in meter to trigger location update, Default is 0 meter.
-  ///
-  /// [showsBackgroundLocationIndicator] The background location usage indicator is a blue bar or a blue pill in the status bar on iOS. Default is false.
-  ///
-  /// [stopWithTerminate] stops location updates when the app is terminated by the user.
-
+  /// Shows the blue background location indicator in the status bar while
+  /// the app uses location in the background.
   final bool showsBackgroundLocationIndicator;
+
+  /// Stops location updates when the user terminates the app; otherwise
+  /// region monitoring relaunches the app to resume tracking.
   final bool stopWithTerminate;
 
+  /// Creates iOS settings. Defaults to [LocationAccuracy.NAVIGATION], no
+  /// distance filter, no indicator and tracking that survives termination.
   const IOSSettings({
     super.accuracy = LocationAccuracy.NAVIGATION,
     super.distanceFilter = 0,
@@ -21,11 +21,13 @@ class IOSSettings extends LocatorSettings {
     this.stopWithTerminate = false,
   });
 
+  /// Serializes the settings for the platform channel.
   Map<String, dynamic> toMap() {
     return {
       Keys.SETTINGS_ACCURACY: accuracy.value,
       Keys.SETTINGS_DISTANCE_FILTER: distanceFilter,
-      Keys.SETTINGS_IOS_SHOWS_BACKGROUND_LOCATION_INDICATOR: showsBackgroundLocationIndicator,
+      Keys.SETTINGS_IOS_SHOWS_BACKGROUND_LOCATION_INDICATOR:
+          showsBackgroundLocationIndicator,
       Keys.SETTINGS_IOS_STOP_WITH_TERMINATE: stopWithTerminate,
     };
   }

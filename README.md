@@ -2,6 +2,12 @@
 
 A Flutter plugin that keeps receiving location updates while the app is in the background.
 
+<p>
+  <img src="https://raw.githubusercontent.com/AbdurrahmanKaraoglu/advanced_background_locator/main/doc/screenshots/idle.png" width="230" alt="Example app before tracking starts">
+  <img src="https://raw.githubusercontent.com/AbdurrahmanKaraoglu/advanced_background_locator/main/doc/screenshots/tracking.png" width="230" alt="Example app receiving background locations">
+  <img src="https://raw.githubusercontent.com/AbdurrahmanKaraoglu/advanced_background_locator/main/doc/screenshots/notification.png" width="230" alt="Android foreground service notification">
+</p>
+
 - **Android:** a foreground service (`foregroundServiceType="location"`) with a persistent notification runs a background Flutter isolate. Locations come from the Fused Location Provider (Google Play services) or the platform `LocationManager`.
 - **iOS:** `CLLocationManager` with `allowsBackgroundLocationUpdates`, plus significant location changes and region monitoring to relaunch the app.
 
@@ -19,7 +25,7 @@ Your callbacks run in a **separate background isolate**, not in your UI isolate.
 
 ```yaml
 dependencies:
-  advanced_background_locator: ^0.1.2
+  advanced_background_locator: ^0.1.3
 ```
 
 ## Android setup
@@ -55,7 +61,9 @@ Platform rules to keep in mind:
 
 ## iOS setup
 
-> The iOS implementation could not be compiled on the maintainer's current (Windows) machine for 0.1.0. Please report any build problems.
+> The iOS implementation could not be compiled on the maintainer's current (Windows) machine since 0.1.0, including the Swift Package Manager support added in 0.1.3. Please report any build problems.
+
+The plugin supports both CocoaPods and Swift Package Manager.
 
 1. Add usage descriptions and the location background mode to `ios/Runner/Info.plist`:
 
@@ -184,9 +192,30 @@ Other APIs:
 | `HIGH` | `PRIORITY_HIGH_ACCURACY` | `kCLLocationAccuracyBest` |
 | `NAVIGATION` | `PRIORITY_HIGH_ACCURACY` | `kCLLocationAccuracyBestForNavigation` |
 
+## Use with other packages
+
+These pure Dart packages work with the `LocationDto` stream of this plugin and do not depend on it:
+
+- [`advanced_geofence`](https://pub.dev/packages/advanced_geofence): turns locations into `enter`, `exit` and `dwell` events for circle and polygon geofences. Run it inside the background callback:
+
+  ```dart
+  @pragma('vm:entry-point')
+  void onLocation(LocationDto dto) {
+    final result = engine.process(GeoPoint(
+      dto.latitude,
+      dto.longitude,
+      accuracy: dto.accuracy,
+      time: DateTime.fromMillisecondsSinceEpoch(dto.time.toInt()),
+    ));
+    // handle result.events, save engine.state
+  }
+  ```
+
+- [`route_simulator`](https://pub.dev/packages/route_simulator): plays realistic fake routes for tests, demos and the Android emulator. `SimulatedLocation.toMap()` uses the same keys, so `LocationDto.fromJson(location.toMap())` works.
+
 ## Example
 
-See the [`example`](example) directory for a complete app that logs locations to a file and shows them in the UI.
+See the [`example`](example) directory for a complete app (English and Turkish) that logs locations to a file and shows them in the UI.
 
 ## License
 
