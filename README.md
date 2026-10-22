@@ -2,6 +2,8 @@
 
 A Flutter plugin that keeps receiving location updates while the app is in the background.
 
+[Türkçe açıklama aşağıda.](#türkçe)
+
 <p>
   <img src="https://raw.githubusercontent.com/AbdurrahmanKaraoglu/advanced_background_locator/main/doc/screenshots/idle.png" width="230" alt="Example app before tracking starts">
   <img src="https://raw.githubusercontent.com/AbdurrahmanKaraoglu/advanced_background_locator/main/doc/screenshots/tracking.png" width="230" alt="Example app receiving background locations">
@@ -25,7 +27,7 @@ Your callbacks run in a **separate background isolate**, not in your UI isolate.
 
 ```yaml
 dependencies:
-  advanced_background_locator: ^0.1.3
+  advanced_background_locator: ^0.1.4
 ```
 
 ## Android setup
@@ -58,6 +60,7 @@ Platform rules to keep in mind:
 - **Android 14+:** the service is started with the `location` type, which requires a granted location permission at that moment.
 - **Reboot:** tracking is resumed after `BOOT_COMPLETED` only if it was running before the reboot (it was not stopped with `unRegisterLocationUpdate`) and background location is granted.
 - `wakeLockTime` (minutes) limits how long the partial wake lock is held.
+- **Stopped in the background?** Some manufacturers (Xiaomi, Huawei, Samsung, …) stop background work aggressively. [`background_doctor`](https://pub.dev/packages/background_doctor) diagnoses why background work stopped and why the app was killed.
 
 ## iOS setup
 
@@ -213,6 +216,22 @@ These pure Dart packages work with the `LocationDto` stream of this plugin and d
 
 - [`route_simulator`](https://pub.dev/packages/route_simulator): plays realistic fake routes for tests, demos and the Android emulator. `SimulatedLocation.toMap()` uses the same keys, so `LocationDto.fromJson(location.toMap())` works.
 
+## Other packages
+
+More packages by the same publisher:
+
+- [`google_maps_polyline`](https://pub.dev/packages/google_maps_polyline): Google Directions routes and polyline encode/decode (pure Dart)
+- [`marker_crafter`](https://pub.dev/packages/marker_crafter): Custom Google Maps markers drawn with Canvas
+- [`animated_route_marker`](https://pub.dev/packages/animated_route_marker): Smoothly animated map marker along a route or live GPS
+- [`advanced_geofence`](https://pub.dev/packages/advanced_geofence): Pure Dart geofencing engine: enter, exit and dwell events
+- [`route_simulator`](https://pub.dev/packages/route_simulator): Realistic fake GPS streams for testing and demos
+- [`background_doctor`](https://pub.dev/packages/background_doctor): Diagnoses why background work stops on Android and why the app was killed
+- [`scan_tally`](https://pub.dev/packages/scan_tally): Continuous barcode scanning for stock counts: dedupe, tally, feedback, GS1
+- [`scan_tally_mobile_scanner`](https://pub.dev/packages/scan_tally_mobile_scanner): mobile_scanner camera adapter for scan_tally
+- [`turkish_kit`](https://pub.dev/packages/turkish_kit): Turkish validators, money in words, casing, provinces, holidays (pure Dart)
+- [`turkish_kit_flutter`](https://pub.dev/packages/turkish_kit_flutter): Flutter widgets for turkish_kit: Turkish money field and input formatters
+- [`flutter_toastify`](https://pub.dev/packages/flutter_toastify): Animated toast notifications
+
 ## Example
 
 See the [`example`](example) directory for a complete app (English and Turkish) that logs locations to a file and shows them in the UI.
@@ -220,3 +239,30 @@ See the [`example`](example) directory for a complete app (English and Turkish) 
 ## License
 
 MIT, see [LICENSE](LICENSE).
+
+## Türkçe
+
+Uygulama arka plandayken de konum güncellemesi almaya devam eden bir Flutter eklentisi. Android'de kalıcı bildirimli bir ön plan servisi
+(`foregroundServiceType="location"`), iOS'ta `CLLocationManager` arka plan konum güncellemeleri kullanılır. Callback'ler ayrı bir arka plan
+isolate'inde çalışır; bu yüzden üst düzey ya da statik ve `@pragma('vm:entry-point')` ile işaretlenmiş fonksiyonlar olmalıdır.
+
+Kurulum, izinler ve kullanım için yukarıdaki İngilizce bölümlere bakın. Örnek uygulama İngilizce ve Türkçe arayüzlüdür.
+
+Arka planda servis durduruluyorsa (Xiaomi, Huawei, Samsung gibi üreticilerde sık görülür)
+[`background_doctor`](https://pub.dev/packages/background_doctor) arka plan işinin neden durduğunu teşhis eder.
+
+### Diğer paketler
+
+Aynı yayıncının diğer paketleri:
+
+- [`google_maps_polyline`](https://pub.dev/packages/google_maps_polyline): Google Directions rotası ve polyline kodlama/çözme (saf Dart)
+- [`marker_crafter`](https://pub.dev/packages/marker_crafter): Canvas ile çizilen özel Google Maps işaretçileri
+- [`animated_route_marker`](https://pub.dev/packages/animated_route_marker): Rota ya da canlı GPS üzerinde akıcı hareket eden harita işaretçisi
+- [`advanced_geofence`](https://pub.dev/packages/advanced_geofence): Saf Dart geofence motoru: giriş, çıkış ve bekleme olayları
+- [`route_simulator`](https://pub.dev/packages/route_simulator): Test ve demo için gerçekçi sahte GPS akışı
+- [`background_doctor`](https://pub.dev/packages/background_doctor): Android'de arka plan işinin neden durduğunu ve uygulamanın neden kapandığını teşhis eder
+- [`scan_tally`](https://pub.dev/packages/scan_tally): Stok sayımı için sürekli barkod okutma: tekrar ayıklama, sayım, geri bildirim, GS1
+- [`scan_tally_mobile_scanner`](https://pub.dev/packages/scan_tally_mobile_scanner): scan_tally için mobile_scanner kamera adaptörü
+- [`turkish_kit`](https://pub.dev/packages/turkish_kit): Türkçe doğrulayıcılar, tutarı yazıyla yazma, harf dönüşümü, il/ilçe, tatiller (saf Dart)
+- [`turkish_kit_flutter`](https://pub.dev/packages/turkish_kit_flutter): turkish_kit için Flutter bileşenleri: Türk biçimli para alanı ve girdi biçimleyicileri
+- [`flutter_toastify`](https://pub.dev/packages/flutter_toastify): Animasyonlu toast bildirimleri

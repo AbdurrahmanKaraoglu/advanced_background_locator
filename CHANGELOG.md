@@ -1,3 +1,7 @@
+## 0.1.4
+
+- DOCS: README lists the other 11 packages by the same publisher and links `background_doctor` for apps stopped in the background; added a short Turkish section. / README'ye aynı yayıncının diğer 11 paketi, arka planda durdurulma için `background_doctor` bağlantısı ve kısa bir Türkçe bölüm eklendi.
+
 ## 0.1.3
 
 ### Added
