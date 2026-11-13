@@ -1,3 +1,13 @@
+## 0.2.0
+
+### Breaking / Kırıcı
+- Requires Flutter 3.44 / Dart 3.12 or newer. / Flutter 3.44 / Dart 3.12 veya üstü gerekir.
+- Android: migrated to built-in Kotlin. The plugin no longer applies the Kotlin Gradle Plugin or adds it to the buildscript classpath; it uses `kotlin { compilerOptions { jvmTarget = JVM_17 } }`. Works with `android.builtInKotlin` set to `true` or `false` (AGP 9+). / Android: yerleşik Kotlin'e geçildi. Eklenti Kotlin Gradle Plugin'i artık kendisi uygulamıyor ve buildscript classpath'ine eklemiyor; `kotlin { compilerOptions { jvmTarget = JVM_17 } }` kullanıyor. `android.builtInKotlin` `true` ya da `false` iken çalışır (AGP 9+).
+
+### Changed / Değişenler
+- `AndroidNotificationSettings` no longer imports `package:flutter/material.dart`; the default icon color is the same value (`Color(0xFF9E9E9E)`, `Colors.grey`). / `AndroidNotificationSettings` artık `package:flutter/material.dart` içe aktarmıyor; varsayılan simge rengi aynı değerde (`Color(0xFF9E9E9E)`, `Colors.grey`).
+- Example: AGP 9.3.1, Gradle 9.5.0, Kotlin 2.4.20 (builds with Flutter 3.47 and 3.50). / Örnek: AGP 9.3.1, Gradle 9.5.0, Kotlin 2.4.20 (Flutter 3.47 ve 3.50 ile derleniyor).
+
 ## 0.1.4
 
 - DOCS: README lists the other 11 packages by the same publisher and links `background_doctor` for apps stopped in the background; added a short Turkish section. / README'ye aynı yayıncının diğer 11 paketi, arka planda durdurulma için `background_doctor` bağlantısı ve kısa bir Türkçe bölüm eklendi.

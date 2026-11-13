@@ -19,7 +19,7 @@ Your callbacks run in a **separate background isolate**, not in your UI isolate.
 
 | | Minimum |
 |---|---|
-| Flutter / Dart | 3.32 / 3.8 |
+| Flutter / Dart | 3.44 / 3.12 |
 | Android | API 24, built with compileSdk 36 |
 | iOS | 13.0 |
 
@@ -27,7 +27,7 @@ Your callbacks run in a **separate background isolate**, not in your UI isolate.
 
 ```yaml
 dependencies:
-  advanced_background_locator: ^0.1.4
+  advanced_background_locator: ^0.2.0
 ```
 
 ## Android setup

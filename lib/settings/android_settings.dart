@@ -1,6 +1,6 @@
 import 'package:advanced_background_locator/keys.dart';
 import 'package:advanced_background_locator/settings/locator_settings.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// Location provider used on Android.
 enum LocationClient {
@@ -49,7 +49,7 @@ class AndroidNotificationSettings {
     this.notificationBigMsg =
         'Background location is on to keep the app up-to-date with your location. This is required for main features to work properly when the app is not running.',
     this.notificationIcon = '',
-    this.notificationIconColor = Colors.grey,
+    this.notificationIconColor = const Color(0xFF9E9E9E), // Colors.grey
     this.notificationTapCallback,
   });
 }

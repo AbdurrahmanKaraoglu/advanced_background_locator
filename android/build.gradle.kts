@@ -2,15 +2,13 @@ group = "abdurrahmankaraoglu.app.advanced_background_locator"
 version = "1.0-SNAPSHOT"
 
 buildscript {
-    val kotlinVersion = "2.4.0"
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:9.1.0")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("com.android.tools.build:gradle:9.1.1")
     }
 }
 
@@ -23,12 +21,6 @@ allprojects {
 
 plugins {
     id("com.android.library")
-}
-
-// AGP 9+ compiles Kotlin on its own; host apps still on AGP 8 need the Kotlin Gradle plugin.
-val agpMajorVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.substringBefore('.').toInt()
-if (agpMajorVersion < 9) {
-    apply(plugin = "org.jetbrains.kotlin.android")
 }
 
 android {
@@ -57,9 +49,11 @@ android {
     }
 }
 
-// Works with both the Kotlin Gradle plugin and AGP's built-in Kotlin support.
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
-    compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+// Built-in Kotlin (AGP 9+): the plugin does not apply the Kotlin Gradle plugin itself.
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+    }
 }
 
 dependencies {

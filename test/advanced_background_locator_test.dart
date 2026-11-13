@@ -4,7 +4,6 @@ import 'package:advanced_background_locator/advanced_background_locator.dart';
 import 'package:advanced_background_locator/callback_dispatcher.dart';
 import 'package:advanced_background_locator/keys.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -127,7 +126,7 @@ void main() {
             client: LocationClient.android,
             androidNotificationSettings: AndroidNotificationSettings(
               notificationTitle: 'title',
-              notificationIconColor: Colors.red,
+              notificationIconColor: Color(0xFFF44336),
               notificationTapCallback: onNotificationTap,
             ),
           ),
@@ -159,7 +158,7 @@ void main() {
         expect(settings[Keys.SETTINGS_ANDROID_NOTIFICATION_TITLE], 'title');
         expect(
           settings[Keys.SETTINGS_ANDROID_NOTIFICATION_ICON_COLOR],
-          Colors.red.toARGB32(),
+          0xFFF44336,
         );
       },
     );
